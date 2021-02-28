@@ -5,35 +5,31 @@ package auth;
 option go_package = "proto;auth";
 
 service Auth {
-	rpc Call(Request) returns (Response) {}
-	rpc Stream(StreamingRequest) returns (stream StreamingResponse) {}
-	rpc PingPong(stream Ping) returns (stream Pong) {}
+	rpc Register(RegisterRequest) returns (RegisterResponse) {
+		option (google.api.http) = {
+			post: "/v1/echo"
+			body: "*"
+		};
+	}
 }
 
-message Message {
-	string say = 1;
-}
-
-message Request {
+message RegisterRequest {
 	string name = 1;
+	string family = 2;
+	string phone = 3;
+	string gender = 4;
+	string address = 5;
+	string birthDate = 6;
+	string email = 7;
 }
 
-message Response {
-	string msg = 1;
+message Status {
+	string code = 1;
+	string message = 2;
 }
 
-message StreamingRequest {
-	int64 count = 1;
+message RegisterResponse {
+	Status status = 1;
+	string message = 2;
 }
 
-message StreamingResponse {
-	int64 count = 1;
-}
-
-message Ping {
-	int64 stroke = 1;
-}
-
-message Pong {
-	int64 stroke = 1;
-}
