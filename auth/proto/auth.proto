@@ -1,8 +1,8 @@
 syntax = "proto3";
 
-package auth;
+package proto;
 
-option go_package = "proto;auth";
+option go_package = "proto;proto";
 
 // import "google/api/annotations.proto";
 

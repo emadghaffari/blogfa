@@ -1,11 +1,11 @@
 package main
 
 import (
-	"auth/handler"
-	pb "auth/proto"
-
 	"github.com/micro/micro/v3/service"
 	"github.com/micro/micro/v3/service/logger"
+
+	"github.com/emadghaffari/blogfa/auth/handler"
+	pb "github.com/emadghaffari/blogfa/auth/proto"
 )
 
 func main() {
