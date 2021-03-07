@@ -1,23 +1,12 @@
-# Auth Service
+# auth
+auth grpc micro service for blogfa application
 
-This is the Auth service
 
-Generated with
+#### services:
+ - service tracer: jaeger
+ - config server: etcd
+ - cmd: gobra
+ - configs: from file(dev), from config server(prod)
+ - logger: zap
 
-```
-micro new auth
-```
-
-## Usage
-
-Generate the proto code
-
-```
-make proto
-```
-
-Run the service
-
-```
-micro run .
-```
+#### rename config.example.yaml to config.yaml

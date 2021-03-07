@@ -1,13 +1,8 @@
 
 GOPATH:=$(shell go env GOPATH)
-.PHONY: init
-init:
-	go get -u github.com/golang/protobuf/proto
-	go get -u github.com/golang/protobuf/protoc-gen-go
-	go get github.com/micro/micro/v3/cmd/protoc-gen-micro
 .PHONY: proto
 proto:
-	protoc --proto_path=. --micro_out=. --go_out=:. proto/auth.proto
+	protoc --proto_path=. --go_out=plugins=grpc:. proto/*.proto
 	
 .PHONY: build
 build:
@@ -17,6 +12,8 @@ build:
 test:
 	go test -v ./... -cover
 
-.PHONY: docker
-docker:
-	docker build . -t auth:latest
+.PHONY: vendor
+vendor:
+	go get ./...
+	go mod vendor
+	go mod verify
