@@ -17,62 +17,76 @@ message Response {
 }
 
 message UserRegisterRequest {
-    string Username = 1;
-    string Password = 2;
-    string Name = 3;
-    string LastName = 4;
-    string Phone = 5;
-    optional string Email = 6;
-    optional string BirthDate = 7;
+    string username = 1;
+    string password = 2;
+    string name = 3;
+    string lastName = 4;
+    string phone = 5;
+    optional string email = 6;
+    optional string birthDate = 7;
+    Gender gender = 8;
+    enum Gender{
+        MALE = 0;
+        FMALE = 1;
+        NONE = 2;
+    }
 }
 
 message UserRegisterResponse {
-    string Message = 1;
-    Response Response = 2;
+    string message = 1;
+    Response response = 2;
 }
 
 message ProviderRegisterRequest {
-    string Username = 1;
-    string Password = 2;
-    string Name = 3;
-    string LastName = 4;
-    string Phone = 5;
-    string FixedNumber = 6;
-    string Company = 7;
-    string Card = 8; // bank card
-    string CardNumber = 9;
-    string ShebaNumber = 10;
-    string Address = 11;
+    string username = 1;
+    string password = 2;
+    string name = 3;
+    string kastName = 4;
+    string phone = 5;
+    string fixedNumber = 6;
+    string company = 7;
+    string card = 8; // bank card
+    string cardNumber = 9;
+    string shebaNumber = 10;
+    string address = 11;
+    Gender gender = 12;
     enum Gender{
-        Male = 0;
-        Fmale = 1;
-        None = 2;
+        MALE = 0;
+        FMALE = 1;
+        NONE = 2;
     }
 }
 message ProviderRegisterResponse {
-    string Message = 1;
-    Response Response = 2;
+    string message = 1;
+    Response response = 2;
 }
 
 
 message AssignProviderRequest {
-    string UserID = 1;
-    string Token = 2;
-    string CreatedAt = 3;
-    string StartedAt = 4;
-    string Company = 5;
-    string Card = 6; // bank card
-    string CardNumber = 7;
-    string ShebaNumber = 8;
-    string Address = 9;
+    string userID = 1;
+    string token = 2;
+    string createdAt = 3;
+    string startedAt = 4;
+    string company = 5;
+    string card = 6; // bank card
+    string cardNumber = 7;
+    string shebaNumber = 8;
+    string address = 9;
+    optional Status status = 10;
+    Gender gender = 11;
+    enum Status {
+        ENABLE = 0;
+        DISABLE = 1;
+        BAN = 2;
+    }
     enum Gender{
-        Male = 0;
-        Fmale = 1;
-        None = 2;
+        MALE = 0;
+        FMALE = 1;
+        NONE = 2;
     }
 }
 
 message AssignProviderResponse {
-    string Message = 1;
-    Response Response = 2;
+    string message = 1;
+    Response response = 2;
 }
