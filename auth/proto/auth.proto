@@ -30,3 +30,26 @@ message UserRegisterResponse {
     string Message = 1;
     Response Response = 2;
 }
+
+message ProviderRegisterRequest {
+    string Username = 1;
+    string Password = 2;
+    string Name = 3;
+    string LastName = 4;
+    string Phone = 5;
+    string FixedNumber = 6;
+    string Company = 7;
+    string Card = 8; // bank card
+    string CardNumber = 9;
+    string ShebaNumber = 10;
+    string Address = 11;
+    enum Gender{
+        Male = 0;
+        Fmale = 1;
+        None = 2;
+    }
+}
+message ProviderRegisterResponse {
+    string Message = 1;
+    Response Response = 2;
+}
