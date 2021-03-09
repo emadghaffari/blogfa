@@ -53,3 +53,26 @@ message ProviderRegisterResponse {
     string Message = 1;
     Response Response = 2;
 }
+
+
+message AssignProviderRequest {
+    string UserID = 1;
+    string Token = 2;
+    string CreatedAt = 3;
+    string StartedAt = 4;
+    string Company = 5;
+    string Card = 6; // bank card
+    string CardNumber = 7;
+    string ShebaNumber = 8;
+    string Address = 9;
+    enum Gender{
+        Male = 0;
+        Fmale = 1;
+        None = 2;
+    }
+}
+
+message AssignProviderResponse {
+    string Message = 1;
+    Response Response = 2;
+}
