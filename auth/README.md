@@ -9,10 +9,7 @@ auth grpc micro service for blogfa application
  admins:
  - search for users
  - verify user
- - send sms to spesific user
- - send notif, sms to spesific group(blue-red-green)
  - get lezzy users server streaming
- - manage users
 #### services:
  - service tracer: jaeger
  - config server: etcd
