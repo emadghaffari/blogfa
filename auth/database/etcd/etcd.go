@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"go.etcd.io/etcd/api/v3/mvccpb"
 	client "go.etcd.io/etcd/client/v3"
 	"go.uber.org/zap"
 	"golang.org/x/net/context"
@@ -21,7 +22,7 @@ var (
 type Store interface {
 	Connect() error
 	GetClient() *client.Client
-	// WatchKey(ctx context.Context, key string, options ...client.OpOption)
+	GetKey(ctx context.Context, key string, callBack func(*mvccpb.KeyValue), options ...client.OpOption) error
 	WatchKey(ctx context.Context, key string, callBack func(*client.Event), options ...client.OpOption)
 	Put(ctx context.Context, key string, value interface{}) error
 }
@@ -66,6 +67,20 @@ func (e *etcd) WatchKey(ctx context.Context, key string, callBack func(*client.E
 			}
 		}
 	}(rch)
+}
+
+
+func (e *etcd) GetKey(ctx context.Context, key string, callBack func(*mvccpb.KeyValue), options ...client.OpOption) error {
+	resp,err := e.cli.Get(ctx, key, options...)
+	if err != nil {
+		return err
+	}
+
+	for _, k := range resp.Kvs {
+		callBack(k)
+	}
+
+	return nil
 }
 
 func (e *etcd) Put(ctx context.Context, key string, value interface{}) error {
