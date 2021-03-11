@@ -2,14 +2,11 @@
 auth grpc micro service for blogfa application
  
  users:
- - register
+ - register users
+ - register provider
  - login with phone-SMS
  - loign with user-pass
  
- admins:
- - search for users
- - verify user
- - get lezzy users server streaming
 #### services:
  - service tracer: jaeger
  - config server: etcd
