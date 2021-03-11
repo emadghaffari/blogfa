@@ -29,6 +29,24 @@ type global struct {
 	Redis   redis
 }
 
+func (g *global) GetService() interface{} {
+	service := struct{
+		Name string
+		GRPC struct{
+			Port string
+			Host string
+		}
+	}{
+		Name: Global.Service.Name,
+		GRPC: struct{Port string; Host string}{
+			Port: Global.GRPC.Port,
+			Host: Global.GRPC.Host,
+		},
+	}
+
+	return service
+}
+
 // Service details
 type service struct {
 	Name string `yaml:"service.name"`

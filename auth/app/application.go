@@ -24,6 +24,7 @@ import (
 	jaegercfg "github.com/uber/jaeger-client-go/config"
 	jaegerlog "github.com/uber/jaeger-client-go/log"
 	"github.com/uber/jaeger-lib/metrics"
+	"go.etcd.io/etcd/api/v3/mvccpb"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -192,8 +193,17 @@ func initConfigServer() {
 		return
 	}
 
-	// watch on keys you want
+	// loop over watchList
 	for _, key := range config.Global.ETCD.WatchList {
+
+		// get configs for first time on app starts
+		etcd.Storage.GetKey(context.Background(), key,func(kv *mvccpb.KeyValue) {
+			// set configs from storage to struct - if exists in Set method
+			config.Global.Set(string(kv.Key), kv.Value)
+
+		},clientv3.WithPrefix())
+
+		// start to watch keys
 		etcd.Storage.WatchKey(context.Background(), key, func(e *clientv3.Event) {
 
 			// set configs from storage to struct - if exists in Set method
@@ -201,4 +211,7 @@ func initConfigServer() {
 
 		}, clientv3.WithPrefix())
 	}
+
+	// apply service discovery - put service details 
+	etcd.Storage.Put(context.Background(),config.Global.Service.Name,config.Global.GetService())
 }

@@ -3,6 +3,7 @@ package etcd
 import (
 	"blogfa/auth/config"
 	"blogfa/auth/pkg/logger"
+	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
@@ -24,7 +25,7 @@ type Store interface {
 	GetClient() *client.Client
 	GetKey(ctx context.Context, key string, callBack func(*mvccpb.KeyValue), options ...client.OpOption) error
 	WatchKey(ctx context.Context, key string, callBack func(*client.Event), options ...client.OpOption)
-	Put(ctx context.Context, key string, value interface{}) error
+	Put(ctx context.Context, key string, value interface{},options ...client.OpOption) error 
 }
 
 type etcd struct {
@@ -83,13 +84,24 @@ func (e *etcd) GetKey(ctx context.Context, key string, callBack func(*mvccpb.Key
 	return nil
 }
 
-func (e *etcd) Put(ctx context.Context, key string, value interface{}) error {
-	_, err := e.cli.Put(ctx, "sample_key", "sample_value")
-
+func (e *etcd) Put(ctx context.Context, key string, value interface{},options ...client.OpOption) error {
+	bts,err := json.Marshal(value)
 	if err != nil {
 		log := logger.GetZapLogger(false)
 		logger.Prepare(log).
-			Append(zap.Any("error", fmt.Sprintf("Config server error: %s", err))).
+			Append(zap.Any("error", fmt.Sprintf("Config server put error: %s", err))).
+			Append(zap.Any("key", key)).
+			Append(zap.Any("value", value)).
+			Level(zap.ErrorLevel).
+			Development().
+			Commit("env")
+		return err
+	}
+	
+	if _, err := e.cli.Put(ctx, key, string(bts),options...);err != nil {
+		log := logger.GetZapLogger(false)
+		logger.Prepare(log).
+			Append(zap.Any("error", fmt.Sprintf("Config server put error: %s", err))).
 			Append(zap.Any("key", key)).
 			Append(zap.Any("value", value)).
 			Level(zap.ErrorLevel).
