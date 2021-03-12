@@ -3,6 +3,7 @@ package app
 import (
 	"blogfa/auth/config"
 	"blogfa/auth/database/etcd"
+	"blogfa/auth/database/mysql"
 	zapLogger "blogfa/auth/pkg/logger"
 	pb "blogfa/auth/proto"
 	"blogfa/auth/service"
@@ -60,6 +61,10 @@ func StartApplication() {
 	if viper.GetString("environment") == "production" {
 		initConfigServer()
 		defer etcd.Storage.GetClient().Close()
+	}
+
+	if err := initDatabase(); err != nil {
+		return
 	}
 
 	g := createService()
@@ -197,11 +202,11 @@ func initConfigServer() {
 	for _, key := range config.Global.ETCD.WatchList {
 
 		// get configs for first time on app starts
-		etcd.Storage.GetKey(context.Background(), key,func(kv *mvccpb.KeyValue) {
+		etcd.Storage.GetKey(context.Background(), key, func(kv *mvccpb.KeyValue) {
 			// set configs from storage to struct - if exists in Set method
 			config.Global.Set(string(kv.Key), kv.Value)
 
-		},clientv3.WithPrefix())
+		}, clientv3.WithPrefix())
 
 		// start to watch keys
 		etcd.Storage.WatchKey(context.Background(), key, func(e *clientv3.Event) {
@@ -212,6 +217,11 @@ func initConfigServer() {
 		}, clientv3.WithPrefix())
 	}
 
-	// apply service discovery - put service details 
-	etcd.Storage.Put(context.Background(),config.Global.Service.Name,config.Global.GetService())
+	// apply service discovery - put service details
+	etcd.Storage.Put(context.Background(), config.Global.Service.Name, config.Global.GetService())
+}
+
+func initDatabase() error {
+	fmt.Printf("mysql storage loaded successfully \n")
+	return mysql.Storage.Connect(config.Global)
 }
