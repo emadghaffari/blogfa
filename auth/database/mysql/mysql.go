@@ -2,6 +2,10 @@ package mysql
 
 import (
 	"blogfa/auth/config"
+	"blogfa/auth/model/permission"
+	"blogfa/auth/model/provider"
+	"blogfa/auth/model/role"
+	"blogfa/auth/model/user"
 	zapLogger "blogfa/auth/pkg/logger"
 	"fmt"
 	"sync"
@@ -14,6 +18,7 @@ import (
 var (
 	Storage   store  = &msql{}
 	namespace string = ""
+	once      sync.Once
 )
 
 type store interface {
@@ -23,14 +28,13 @@ type store interface {
 }
 
 type msql struct {
-	db   *gorm.DB
-	once sync.Once
+	db *gorm.DB
 }
 
 func (m *msql) Connect(config config.GlobalConfig) error {
 	logger := zapLogger.GetZapLogger(false)
 	var err error
-	m.once.Do(func() {
+	once.Do(func() {
 		if config.MYSQL.Namespace != "" {
 			namespace = config.MYSQL.Namespace
 		}
@@ -72,7 +76,12 @@ func (m *msql) Connect(config config.GlobalConfig) error {
 }
 
 func (m *msql) AutoMigrate() error {
-	sql := m.db.AutoMigrate()
+	sql := m.db.AutoMigrate(
+		user.User{},
+		role.Role{},
+		permission.Permission{},
+		provider.Provider{},
+	)
 
 	return sql
 }
