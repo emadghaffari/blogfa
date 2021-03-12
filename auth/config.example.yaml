@@ -3,25 +3,22 @@ environment: "production"
 
 service:
   name: "template"
+  grpc:
+    host: "localhost"
+    port: ":8082"
+    endpoint: ":8083"
+  http:
+    host: "localhost"
+    port: ":8081"
+    endpoint: ":8080"
+  debug:
+    host: "localhost"
+    port: ":8084"
+    endpoint: ":8085"
 
 jaeger:
   hostPort: "jaeger:6831"
   logSpans: true
-
-grpc:
-  host: "localhost"
-  port: ":8082"
-  endpoint: ":8083"
-
-http:
-  host: "localhost"
-  port: ":8081"
-  endpoint: ":8080"
-
-debug:
-  host: "localhost"
-  port: ":8084"
-  endpoint: ":8085"
 
 redis:
   username: ""
@@ -43,3 +40,14 @@ etcd:
     - "http://etcd3:2379"
   watchList:
     - "redis"
+    - "service"
+    - "mysql"
+
+mysql:
+  username: "root"
+  password: "password"
+  host: "db"
+  schema: "blogfa_auth"
+  driver: "mysql"
+  automigrate: true
+  logger: true
