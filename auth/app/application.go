@@ -8,6 +8,7 @@ import (
 	pb "blogfa/auth/proto"
 	"blogfa/auth/service"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -67,6 +68,10 @@ func StartApplication() {
 		return
 	}
 
+	// FIXME DELETE the comments
+	b, _ := json.Marshal(config.Global)
+	fmt.Println(string(b))
+
 	g := createService()
 	initMetricsEndpoint(g)
 	initCancelInterrupt(g)
@@ -97,12 +102,12 @@ func initConfigs() error {
 }
 
 func initGRPCHandler(g *group.Group) {
-	defer fmt.Printf("grpc connected port:%s \n", config.Global.GRPC.Port)
+	defer fmt.Printf("grpc connected port:%s \n", config.Global.Service.GRPC.Port)
 
 	options := defaultGRPCOptions(logger, tracer)
 	// Add your GRPC options here
 
-	lis, err := net.Listen("tcp", config.Global.GRPC.Port)
+	lis, err := net.Listen("tcp", config.Global.Service.GRPC.Port)
 	if err != nil {
 		zapLogger.Prepare(logger).Development().Level(zap.ErrorLevel).Commit(err.Error())
 	}
@@ -121,10 +126,10 @@ func initGRPCHandler(g *group.Group) {
 }
 
 func initMetricsEndpoint(g *group.Group) {
-	defer fmt.Printf("metrics started port:%s \n", config.Global.HTTP.Port)
+	defer fmt.Printf("metrics started port:%s \n", config.Global.Service.HTTP.Port)
 
 	http.DefaultServeMux.Handle("/metrics", promhttp.Handler())
-	debugListener, err := net.Listen("tcp", config.Global.HTTP.Port)
+	debugListener, err := net.Listen("tcp", config.Global.Service.HTTP.Port)
 	if err != nil {
 		zapLogger.Prepare(logger).Development().Level(zap.InfoLevel).Add("msg", "transport debug/HTTP during Listen err").Commit(err.Error())
 	}
