@@ -2,10 +2,10 @@ package config
 
 var (
 	// Global config
-	Global global
+	Global GlobalConfig
 )
 
-type global struct {
+type GlobalConfig struct {
 	Environment string `yaml:"environment"`
 	GRPC        struct {
 		Host     string `yaml:"grpc.host"`
@@ -27,18 +27,22 @@ type global struct {
 	Log     loggingConfig
 	ETCD    etcd
 	Redis   redis
+	MYSQL   database
 }
 
-func (g *global) GetService() interface{} {
-	service := struct{
+func (g *GlobalConfig) GetService() interface{} {
+	service := struct {
 		Name string
-		GRPC struct{
+		GRPC struct {
 			Port string
 			Host string
 		}
 	}{
 		Name: Global.Service.Name,
-		GRPC: struct{Port string; Host string}{
+		GRPC: struct {
+			Port string
+			Host string
+		}{
 			Port: Global.GRPC.Port,
 			Host: Global.GRPC.Host,
 		},
@@ -72,4 +76,15 @@ type etcd struct {
 // redis struct
 type redis struct {
 	Address string `json:"address" yaml:"redis.address"`
+}
+
+type database struct {
+	Username    string `yaml:"mysql.username"`
+	Password    string `yaml:"mysql.password"`
+	Host        string `yaml:"mysql.host"`
+	Schema      string `yaml:"mysql.schema"`
+	Driver      string `yaml:"mysql.driver"`
+	Automigrate bool   `yaml:"mysql.automigrate"`
+	Logger      bool   `yaml:"mysql.logger"`
+	Namespace   string
 }
