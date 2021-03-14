@@ -8,7 +8,6 @@ import (
 	pb "blogfa/auth/proto"
 	"blogfa/auth/service"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
@@ -67,10 +66,6 @@ func StartApplication() {
 	if err := initDatabase(); err != nil {
 		return
 	}
-
-	// FIXME DELETE the comments
-	b, _ := json.Marshal(config.Global)
-	fmt.Println(string(b))
 
 	g := createService()
 	initMetricsEndpoint(g)
