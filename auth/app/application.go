@@ -77,12 +77,14 @@ func StartApplication() {
 	}
 }
 
+// init zap logger
 func initLogger() {
 	defer fmt.Printf("zap logger is available \n")
 	zapLogger.SetLogPath("logs")
 	logger = zapLogger.GetZapLogger(false)
 }
 
+// init configs
 func initConfigs() error {
 	defer fmt.Printf("configs loaded from file successfully \n")
 
@@ -96,6 +98,7 @@ func initConfigs() error {
 	return config.Load(dir + "/config.yaml")
 }
 
+// init grpc connection
 func initGRPCHandler(g *group.Group) {
 	defer fmt.Printf("grpc connected port:%s \n", config.Global.Service.GRPC.Port)
 
@@ -120,6 +123,7 @@ func initGRPCHandler(g *group.Group) {
 	})
 }
 
+// init metrics
 func initMetricsEndpoint(g *group.Group) {
 	defer fmt.Printf("metrics started port:%s \n", config.Global.Service.HTTP.Port)
 
@@ -135,6 +139,7 @@ func initMetricsEndpoint(g *group.Group) {
 	})
 }
 
+// init cancle Interrupt
 func initCancelInterrupt(g *group.Group) {
 	cancelInterrupt := make(chan struct{})
 	g.Add(func() error {
@@ -151,6 +156,7 @@ func initCancelInterrupt(g *group.Group) {
 	})
 }
 
+// init jaeger tracer
 func initJaeger() (io.Closer, error) {
 	defer fmt.Printf("Jaeger loaded successfully \n")
 	// Sample configuration for testing. Use constant sampling to sample every trace
@@ -221,6 +227,7 @@ func initConfigServer() {
 	etcd.Storage.Put(context.Background(), config.Global.Service.Name, config.Global.GetService())
 }
 
+// init mysql database
 func initDatabase() error {
 	fmt.Printf("mysql storage loaded successfully \n")
 	return mysql.Storage.Connect(config.Global)
