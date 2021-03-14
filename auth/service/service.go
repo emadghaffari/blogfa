@@ -3,14 +3,12 @@ package service
 import (
 	pb "blogfa/auth/proto"
 	"context"
-	"fmt"
 )
 
 // Auth service
 type Auth struct{}
 
 func (a *Auth) RegisterUser(ctx context.Context, req *pb.UserRegisterRequest) (*pb.UserRegisterResponse, error) {
-	fmt.Println("Hello user")
 	return &pb.UserRegisterResponse{}, nil
 }
 func (a *Auth) RegisterProvider(ctx context.Context, req *pb.ProviderRegisterRequest) (*pb.ProviderRegisterResponse, error) {
