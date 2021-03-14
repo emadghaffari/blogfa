@@ -58,9 +58,5 @@ func file(path string) error {
 		return err
 	}
 
-	// FIXME DELETE the comments
-	// b, _ := json.Marshal(Global)
-	// fmt.Println(string(b))
-
 	return nil
 }
