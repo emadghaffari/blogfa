@@ -25,7 +25,7 @@ type Store interface {
 	GetClient() *client.Client
 	GetKey(ctx context.Context, key string, callBack func(*mvccpb.KeyValue), options ...client.OpOption) error
 	WatchKey(ctx context.Context, key string, callBack func(*client.Event), options ...client.OpOption)
-	Put(ctx context.Context, key string, value interface{},options ...client.OpOption) error 
+	Put(ctx context.Context, key string, value interface{}, options ...client.OpOption) error
 }
 
 type etcd struct {
@@ -33,6 +33,7 @@ type etcd struct {
 	once sync.Once
 }
 
+// connect method, connect to etcd db
 func (e *etcd) Connect() error {
 	var err error
 	e.once.Do(func() {
@@ -54,10 +55,12 @@ func (e *etcd) Connect() error {
 	return nil
 }
 
+// get etcd client
 func (e *etcd) GetClient() *client.Client {
 	return e.cli
 }
 
+// watch on a key
 func (e *etcd) WatchKey(ctx context.Context, key string, callBack func(*client.Event), options ...client.OpOption) {
 	rch := e.cli.Watch(ctx, key, options...)
 
@@ -70,9 +73,9 @@ func (e *etcd) WatchKey(ctx context.Context, key string, callBack func(*client.E
 	}(rch)
 }
 
-
+// get value of key
 func (e *etcd) GetKey(ctx context.Context, key string, callBack func(*mvccpb.KeyValue), options ...client.OpOption) error {
-	resp,err := e.cli.Get(ctx, key, options...)
+	resp, err := e.cli.Get(ctx, key, options...)
 	if err != nil {
 		return err
 	}
@@ -84,8 +87,9 @@ func (e *etcd) GetKey(ctx context.Context, key string, callBack func(*mvccpb.Key
 	return nil
 }
 
-func (e *etcd) Put(ctx context.Context, key string, value interface{},options ...client.OpOption) error {
-	bts,err := json.Marshal(value)
+// put into etcd
+func (e *etcd) Put(ctx context.Context, key string, value interface{}, options ...client.OpOption) error {
+	bts, err := json.Marshal(value)
 	if err != nil {
 		log := logger.GetZapLogger(false)
 		logger.Prepare(log).
@@ -97,8 +101,8 @@ func (e *etcd) Put(ctx context.Context, key string, value interface{},options ..
 			Commit("env")
 		return err
 	}
-	
-	if _, err := e.cli.Put(ctx, key, string(bts),options...);err != nil {
+
+	if _, err := e.cli.Put(ctx, key, string(bts), options...); err != nil {
 		log := logger.GetZapLogger(false)
 		logger.Prepare(log).
 			Append(zap.Any("error", fmt.Sprintf("Config server put error: %s", err))).
