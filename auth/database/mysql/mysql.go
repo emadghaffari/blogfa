@@ -21,16 +21,19 @@ var (
 	once      sync.Once
 )
 
+// store interface is interface for store things into mysql
 type store interface {
 	Connect(config config.GlobalConfig) error
 	AutoMigrate() error
 	GetDatabase() *gorm.DB
 }
 
+// mysql struct
 type msql struct {
 	db *gorm.DB
 }
 
+// Connect method job is connect to mysql database and check migration
 func (m *msql) Connect(config config.GlobalConfig) error {
 	logger := zapLogger.GetZapLogger(false)
 	var err error
@@ -75,6 +78,7 @@ func (m *msql) Connect(config config.GlobalConfig) error {
 	return err
 }
 
+// AutoMigrate method for migrate to database
 func (m *msql) AutoMigrate() error {
 	sql := m.db.AutoMigrate(
 		user.User{},
@@ -86,6 +90,7 @@ func (m *msql) AutoMigrate() error {
 	return sql
 }
 
+// GetDatabase instance
 func (m *msql) GetDatabase() *gorm.DB {
 	return m.db
 }
