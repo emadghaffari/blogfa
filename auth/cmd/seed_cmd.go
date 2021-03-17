@@ -10,4 +10,5 @@ var seedCMD = cobra.Command{
 	Run:  seed,
 }
 
+// seed database with fake data
 func seed(cmd *cobra.Command, args []string) {}
