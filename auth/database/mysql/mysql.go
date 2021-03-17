@@ -7,6 +7,7 @@ import (
 	"blogfa/auth/model/role"
 	"blogfa/auth/model/user"
 	zapLogger "blogfa/auth/pkg/logger"
+	"context"
 	"fmt"
 	"sync"
 
@@ -93,4 +94,33 @@ func (m *msql) AutoMigrate() error {
 // GetDatabase instance
 func (m *msql) GetDatabase() *gorm.DB {
 	return m.db
+}
+
+func (m *msql) Where(query interface{}, args ...interface{}) *gorm.DB {
+	return m.db.Where(query, args...)
+}
+
+func (m *msql) First(dest interface{}, conds ...interface{}) *gorm.DB {
+	return m.db.First(dest, conds...)
+}
+
+func (m *msql) Table(name string, args ...interface{}) *gorm.DB {
+	return m.db.Table(name, args...)
+}
+
+func (m *msql) Preload(query string, args ...interface{}) *gorm.DB {
+	return m.db.Preload(query, args...)
+}
+
+func (m *msql) Create(ctx context.Context, data interface{}) error {
+	tx := m.db.Begin()
+	defer tx.Commit()
+
+	// try to Create post with model
+	if gm := tx.Create(&data); gm.Error != nil {
+		tx.Rollback()
+		return gm.Error
+	}
+
+	return nil
 }
