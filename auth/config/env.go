@@ -21,6 +21,7 @@ func Load(path string) error {
 	return nil
 }
 
+// file func
 func file(path string) error {
 	log := logger.GetZapLogger(false)
 

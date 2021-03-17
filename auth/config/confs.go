@@ -5,6 +5,7 @@ var (
 	Global GlobalConfig
 )
 
+// GlobalConfig is base of configs we need for project
 type GlobalConfig struct {
 	Environment string `yaml:"environment"`
 	Service     service
@@ -15,6 +16,7 @@ type GlobalConfig struct {
 	MYSQL       database
 }
 
+// GetService is method for get a service struct with default vaules by config file
 func (g *GlobalConfig) GetService() interface{} {
 	service := struct {
 		Name string
@@ -78,6 +80,7 @@ type redis struct {
 	Address string `json:"address" yaml:"redis.address"`
 }
 
+// database struct
 type database struct {
 	Username    string `yaml:"mysql.username"`
 	Password    string `yaml:"mysql.password"`
