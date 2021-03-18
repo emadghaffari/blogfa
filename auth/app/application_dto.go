@@ -23,5 +23,6 @@ func defaultGRPCOptions(logger *zap.Logger, tracer opentracing.Tracer) []grpc.Se
 	options = append(options, grpc.UnaryInterceptor(
 		otgrpc.OpenTracingServerInterceptor(tracer, otgrpc.LogPayloads()),
 	))
+
 	return options
 }
