@@ -2,10 +2,6 @@ package mysql
 
 import (
 	"blogfa/auth/config"
-	"blogfa/auth/model/permission"
-	"blogfa/auth/model/provider"
-	"blogfa/auth/model/role"
-	"blogfa/auth/model/user"
 	zapLogger "blogfa/auth/pkg/logger"
 	"context"
 	"fmt"
@@ -25,8 +21,12 @@ var (
 // store interface is interface for store things into mysql
 type store interface {
 	Connect(config config.GlobalConfig) error
-	AutoMigrate() error
 	GetDatabase() *gorm.DB
+	Where(query interface{}, args ...interface{}) *gorm.DB
+	First(dest interface{}, conds ...interface{}) *gorm.DB
+	Table(name string, args ...interface{}) *gorm.DB
+	Preload(query string, args ...interface{}) *gorm.DB
+	Create(ctx context.Context, data interface{}) error
 }
 
 // mysql struct
@@ -62,33 +62,9 @@ func (m *msql) Connect(config config.GlobalConfig) error {
 			return
 		}
 
-		if config.MYSQL.Automigrate {
-			if err := m.AutoMigrate(); err != nil {
-				zapLogger.Prepare(logger).
-					Add("err", "database automigrate").
-					Development().
-					Level(zap.ErrorLevel).
-					Commit(err.Error())
-
-				return
-			}
-		}
-
 	})
 
 	return err
-}
-
-// AutoMigrate method for migrate to database
-func (m *msql) AutoMigrate() error {
-	sql := m.db.AutoMigrate(
-		user.User{},
-		role.Role{},
-		permission.Permission{},
-		provider.Provider{},
-	)
-
-	return sql
 }
 
 // GetDatabase instance
