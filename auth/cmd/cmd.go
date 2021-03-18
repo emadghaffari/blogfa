@@ -23,5 +23,6 @@ func RootCmd() *cobra.Command {
 
 	// add more commands
 	rootCmd.AddCommand(&seedCMD)
+	rootCmd.AddCommand(&migrateCMD)
 	return &rootCmd
 }
