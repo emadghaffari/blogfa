@@ -6,9 +6,9 @@ import (
 	"blogfa/auth/model/permission"
 	"blogfa/auth/model/provider"
 	"blogfa/auth/model/role"
+	"blogfa/auth/model/user"
 	"fmt"
 	"os"
-	"os/user"
 
 	"github.com/spf13/cobra"
 )
@@ -31,7 +31,8 @@ func migrate(cmd *cobra.Command, args []string) {
 	config.Load(dir + "/config.yaml")
 
 	if err := mysql.Storage.Connect(config.Global); err != nil {
-		fmt.Println(err)
+		fmt.Println(err.Error())
+		return
 	}
 
 	if !config.Global.MYSQL.Automigrate {
