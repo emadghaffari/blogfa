@@ -78,6 +78,7 @@ services:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_USER: root
       MYSQL_DATABASE: blogfa
+      MYSQL_PASSWORD: password
     healthcheck:
       test:
         [
@@ -143,7 +144,7 @@ services:
       - "--probe.docker"
       - "true"
     networks:
-      - application
+      - backend
 networks:
   backend:
     name: backend
