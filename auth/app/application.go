@@ -4,6 +4,7 @@ import (
 	"blogfa/auth/config"
 	"blogfa/auth/database/etcd"
 	"blogfa/auth/database/mysql"
+	"blogfa/auth/pkg/jtrace"
 	zapLogger "blogfa/auth/pkg/logger"
 	pb "blogfa/auth/proto"
 	"blogfa/auth/service"
@@ -18,13 +19,8 @@ import (
 	"syscall"
 
 	group "github.com/oklog/oklog/pkg/group"
-	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/viper"
-	"github.com/uber/jaeger-client-go"
-	jaegercfg "github.com/uber/jaeger-client-go/config"
-	jaegerlog "github.com/uber/jaeger-client-go/log"
-	"github.com/uber/jaeger-lib/metrics"
 	"go.etcd.io/etcd/api/v3/mvccpb"
 	clientv3 "go.etcd.io/etcd/client/v3"
 	"go.uber.org/zap"
@@ -32,7 +28,6 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-var tracer opentracing.Tracer
 var logger *zap.Logger
 
 // StartApplication func
@@ -102,7 +97,7 @@ func initConfigs() error {
 func initGRPCHandler(g *group.Group) {
 	defer fmt.Printf("grpc connected port:%s \n", config.Global.Service.GRPC.Port)
 
-	options := defaultGRPCOptions(logger, tracer)
+	options := defaultGRPCOptions(logger, jtrace.Tracer.GetTracer())
 	// Add your GRPC options here
 
 	lis, err := net.Listen("tcp", config.Global.Service.GRPC.Port)
@@ -159,38 +154,10 @@ func initCancelInterrupt(g *group.Group) {
 // init jaeger tracer
 func initJaeger() (io.Closer, error) {
 	defer fmt.Printf("Jaeger loaded successfully \n")
-	// Sample configuration for testing. Use constant sampling to sample every trace
-	// and enable LogSpan to log every span via configured Logger.
-	cfg := jaegercfg.Configuration{
-		ServiceName: config.Global.Service.Name,
-		Sampler: &jaegercfg.SamplerConfig{
-			Type:  jaeger.SamplerTypeConst,
-			Param: 1,
-		},
-		Reporter: &jaegercfg.ReporterConfig{
-			LogSpans:           config.Global.Jaeger.LogSpans,
-			LocalAgentHostPort: config.Global.Jaeger.HostPort,
-		},
-	}
-
-	jLogger := jaegerlog.StdLogger
-	jMetricsFactory := metrics.NullFactory
-
-	// Initialize tracer with a logger and a metrics factory
-	var closer io.Closer
-	var err error
-	tracer, closer, err = cfg.NewTracer(
-		jaegercfg.Logger(jLogger),
-		jaegercfg.Metrics(jMetricsFactory),
-		jaegercfg.ZipkinSharedRPCSpan(true),
-	)
+	closer, err := jtrace.Tracer.Connect()
 	if err != nil {
-		zapLogger.Prepare(logger).Development().Level(zap.InfoLevel).Add("msg", "during Listen jaeger err").Commit(err.Error())
-
 		return nil, err
 	}
-
-	opentracing.SetGlobalTracer(tracer)
 
 	return closer, nil
 }
