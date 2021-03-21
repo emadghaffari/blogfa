@@ -23,3 +23,25 @@ func (g *GlobalConfig) Set(key string, query []byte) error {
 
 	return nil
 }
+
+// GetService is method for get a service struct with default vaules by config file
+func (g *GlobalConfig) GetService() interface{} {
+	service := struct {
+		Name string
+		GRPC struct {
+			Port string
+			Host string
+		}
+	}{
+		Name: Global.Service.Name,
+		GRPC: struct {
+			Port string
+			Host string
+		}{
+			Port: Global.Service.GRPC.Port,
+			Host: Global.Service.GRPC.Host,
+		},
+	}
+
+	return service
+}
