@@ -43,6 +43,6 @@ func (n *nts) Connect() error {
 	return err
 }
 
-func (n *nts) GetConnection() *nats.Conn {
+func (n *nts) Conn() *nats.Conn {
 	return n.conn
 }
