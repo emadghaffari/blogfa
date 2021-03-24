@@ -1,11 +1,12 @@
 # auth
-auth grpc micro service for blogfa application
+auth grpc microservice for blogfa application
  
  users:
  - register users
  - register provider
  - login with phone-SMS
  - loign with user-pass
+ 
  
 #### services:
  - service tracer: jaeger
