@@ -5,7 +5,7 @@ import (
 	"context"
 )
 
-func (u *User) Register(ctx context.Context) error {
+func (u *User) Register(ctx context.Context,user User) error {
 	mysql.Storage.Create(ctx, u)
 
 	return nil

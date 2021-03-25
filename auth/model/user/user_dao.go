@@ -2,8 +2,17 @@ package user
 
 import (
 	"blogfa/auth/model/role"
+	"context"
 	"time"
 )
+
+var(
+	Model UserInterface = &User{}
+)
+
+type UserInterface interface{
+	Register(ctx context.Context,user User) error
+}
 
 // User model
 type User struct {
