@@ -24,6 +24,9 @@ var (
 type itracer interface {
 	Connect() (io.Closer, error)
 	GetTracer() opentracing.Tracer
+	FromContext(ctx context.Context, startName string) opentracing.Span
+	StartSpan(str string) opentracing.Span
+	ContextFromSpan(ctx context.Context, span opentracing.Span) context.Context
 }
 
 type jtracer struct{}
@@ -84,4 +87,16 @@ func (j *jtracer) FromContext(ctx context.Context, startName string) opentracing
 
 	// if we havent span in context, create new span
 	return opentracing.GlobalTracer().StartSpan(startName)
+}
+
+func (j *jtracer) StartSpan(str string) opentracing.Span {
+	return opentracing.GlobalTracer().StartSpan(str)
+}
+
+func (j *jtracer) ContextFromSpan(ctx context.Context, span opentracing.Span) context.Context {
+	if qr := ctx.Value("span"); qr != nil {
+		ctx := context.Background()
+		return context.WithValue(ctx, "span", span)
+	}
+	return context.WithValue(ctx, "span", span)
 }
