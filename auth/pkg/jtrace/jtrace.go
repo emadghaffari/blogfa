@@ -72,7 +72,7 @@ func (j *jtracer) Connect() (io.Closer, error) {
 }
 
 func (j *jtracer) GetTracer() opentracing.Tracer {
-	return tracer
+	return opentracing.GlobalTracer()
 }
 
 func (j *jtracer) FromContext(ctx context.Context, startName string) opentracing.Span {

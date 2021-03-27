@@ -13,10 +13,11 @@ type Auth struct{}
 func (a *Auth) RegisterUser(ctx context.Context, req *pb.UserRegisterRequest) (*pb.UserRegisterResponse, error) {
 	span := jtrace.Tracer.StartSpan("register-user")
 	defer span.Finish()
+	span.SetTag("register", "register user")
 
 	user.Model.Register(jtrace.Tracer.ContextWithSpan(ctx, span), user.User{})
 
-	return &pb.UserRegisterResponse{}, nil
+	return &pb.UserRegisterResponse{Message: "DONE"}, nil
 }
 func (a *Auth) RegisterProvider(ctx context.Context, req *pb.ProviderRegisterRequest) (*pb.ProviderRegisterResponse, error) {
 	span := jtrace.Tracer.StartSpan("register-provider")
