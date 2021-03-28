@@ -1,6 +1,7 @@
 package app
 
 import (
+	"blogfa/auth/broker"
 	"blogfa/auth/config"
 	"blogfa/auth/database/etcd"
 	"blogfa/auth/database/mysql"
@@ -61,6 +62,11 @@ func StartApplication() {
 	if err := initDatabase(); err != nil {
 		return
 	}
+
+	if err := initMessageBroker(); err != nil {
+		return
+	}
+	defer broker.Nats.Conn().Close()
 
 	g := createService()
 	initMetricsEndpoint(g)
@@ -198,4 +204,9 @@ func initConfigServer() {
 func initDatabase() error {
 	fmt.Printf("mysql storage loaded successfully \n")
 	return mysql.Storage.Connect(config.Global)
+}
+
+func initMessageBroker() error {
+	fmt.Printf("nats message broker loaded successfully \n")
+	return broker.Nats.Connect()
 }
