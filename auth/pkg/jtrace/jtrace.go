@@ -28,6 +28,7 @@ type itracer interface {
 	StartSpan(str string) opentracing.Span
 	ContextWithSpan(ctx context.Context, span opentracing.Span) context.Context
 	SpanFromContext(ctx context.Context, name string, opts ...opentracing.StartSpanOption) (opentracing.Span, context.Context)
+	ChildOf(span opentracing.Span, name string) opentracing.Span
 }
 
 type jtracer struct{}
@@ -104,4 +105,8 @@ func (j *jtracer) ContextWithSpan(ctx context.Context, span opentracing.Span) co
 
 func (j *jtracer) SpanFromContext(ctx context.Context, name string, opts ...opentracing.StartSpanOption) (opentracing.Span, context.Context) {
 	return opentracing.StartSpanFromContext(ctx, name, opts...)
+}
+
+func (j *jtracer) ChildOf(span opentracing.Span, name string) opentracing.Span {
+	return opentracing.StartSpan(name, opentracing.ChildOf(span.Context()))
 }
