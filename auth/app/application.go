@@ -67,6 +67,7 @@ func StartApplication() {
 		return
 	}
 	defer broker.Nats.Conn().Close()
+	defer broker.Nats.ECConn().Close()
 
 	g := createService()
 	initMetricsEndpoint(g)
@@ -208,5 +209,14 @@ func initDatabase() error {
 
 func initMessageBroker() error {
 	fmt.Printf("nats message broker loaded successfully \n")
-	return broker.Nats.Connect()
+	if err := broker.Nats.Connect(); err != nil {
+		return err
+	}
+
+	if err := broker.Nats.EncodedConn(); err != nil {
+		return err
+	}
+
+	return nil
+
 }
