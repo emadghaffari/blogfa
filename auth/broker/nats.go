@@ -21,6 +21,9 @@ var (
 type NatsBroker interface {
 	Connect() error
 	Conn() *nats.Conn
+	EncodedConn() error
+	ECConn() *nats.EncodedConn
+	Publish(ctx context.Context, subject string, value interface{}) error
 }
 
 type nts struct {
