@@ -16,6 +16,9 @@ func (a *Auth) RegisterUser(ctx context.Context, req *pb.UserRegisterRequest) (*
 	span.SetTag("register", "register user")
 
 	user.Model.Register(jtrace.Tracer.ContextWithSpan(ctx, span), user.User{})
+	child := jtrace.Tracer.ChildOf(span, "register")
+	child.SetTag("register", "after register user")
+	defer child.Finish()
 
 	return &pb.UserRegisterResponse{Message: "DONE"}, nil
 }
