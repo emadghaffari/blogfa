@@ -31,6 +31,7 @@ type nts struct {
 	ec   *nats.EncodedConn
 }
 
+// Connect nats broker
 func (n *nts) Connect() error {
 	var err error
 	oncen.Do(func() {
@@ -59,6 +60,7 @@ func (n *nts) Connect() error {
 	return err
 }
 
+// EncodeConn Encode connection to json format
 func (n *nts) EncodedConn() error {
 	if n.conn == nil {
 		logger := zapLogger.GetZapLogger(false)
@@ -77,13 +79,17 @@ func (n *nts) EncodedConn() error {
 	return nil
 }
 
+// Conn get Connection
 func (n *nts) Conn() *nats.Conn {
 	return n.conn
 }
+
+// ECConn get EncodedConnection
 func (n *nts) ECConn() *nats.EncodedConn {
 	return n.ec
 }
 
+// Publish new message
 func (n *nts) Publish(ctx context.Context, subject string, value interface{}) error {
 	if err := n.ec.Publish(subject, &value); err != nil {
 		logger := zapLogger.GetZapLogger(false)
