@@ -207,6 +207,7 @@ func initDatabase() error {
 	return mysql.Storage.Connect(config.Global)
 }
 
+// init message broker
 func initMessageBroker() error {
 	fmt.Printf("nats message broker loaded successfully \n")
 	if err := broker.Nats.Connect(); err != nil {
