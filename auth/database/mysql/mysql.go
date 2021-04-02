@@ -26,7 +26,7 @@ type store interface {
 	First(dest interface{}, conds ...interface{}) *gorm.DB
 	Table(name string, args ...interface{}) *gorm.DB
 	Preload(query string, args ...interface{}) *gorm.DB
-	Create(ctx context.Context, data interface{}) error
+	Create(ctx context.Context, table string, data interface{}) error
 }
 
 // mysql struct
@@ -88,13 +88,18 @@ func (m *msql) Preload(query string, args ...interface{}) *gorm.DB {
 	return m.db.Preload(query, args...)
 }
 
-func (m *msql) Create(ctx context.Context, data interface{}) error {
+func (m *msql) Create(ctx context.Context, table string, data interface{}) error {
 	tx := m.db.Begin()
 	defer tx.Commit()
 
 	// try to Create post with model
-	if gm := tx.Create(&data); gm.Error != nil {
+	if gm := tx.Table(table).Create(&data); gm.Error != nil {
 		tx.Rollback()
+		logger := zapLogger.GetZapLogger(false)
+		zapLogger.Prepare(logger).
+			Development().
+			Level(zap.ErrorLevel).
+			Commit(gm.Error.Error())
 		return gm.Error
 	}
 
