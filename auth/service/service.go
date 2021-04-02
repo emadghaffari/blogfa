@@ -2,9 +2,11 @@ package service
 
 import (
 	"blogfa/auth/model/user"
+	"blogfa/auth/pkg/cript"
 	"blogfa/auth/pkg/jtrace"
 	pb "blogfa/auth/proto"
 	"context"
+	"fmt"
 )
 
 // Auth service
@@ -15,7 +17,25 @@ func (a *Auth) RegisterUser(ctx context.Context, req *pb.UserRegisterRequest) (*
 	defer span.Finish()
 	span.SetTag("register", "register user")
 
-	user.Model.Register(jtrace.Tracer.ContextWithSpan(ctx, span), user.User{})
+	password, err := cript.Hash(req.GetPassword())
+	if err != nil {
+		return &pb.UserRegisterResponse{Message: "ERROR"}, fmt.Errorf("error in hash password: ", err.Error())
+	}
+
+	err = user.Model.Register(jtrace.Tracer.ContextWithSpan(ctx, span), user.User{
+		Username:  req.GetUsername(),
+		Password:  &password,
+		Name:      req.GetName(),
+		LastName:  req.GetLastName(),
+		Phone:     req.GetPhone(),
+		Email:     req.GetEmail(),
+		BirthDate: req.GetBirthDate(),
+		Gender:    req.GetGender().String(),
+		RoleID:    1, // USER
+	})
+	if err != nil {
+		return &pb.UserRegisterResponse{Message: "ERROR"}, fmt.Errorf("error in hash password: %s", err.Error())
+	}
 
 	child := jtrace.Tracer.ChildOf(span, "register")
 	child.SetTag("register", "after register user")
