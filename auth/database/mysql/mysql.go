@@ -89,19 +89,19 @@ func (m *msql) Preload(query string, args ...interface{}) *gorm.DB {
 }
 
 func (m *msql) Create(ctx context.Context, table string, data interface{}) error {
-	tx := m.db.Begin()
+	tx := m.GetDatabase().Begin()
 	defer tx.Commit()
 
-	// try to Create post with model
-	if gm := tx.Table(table).Create(&data); gm.Error != nil {
+	if err := tx.Table(table).Create(&data).Error; err != nil {
 		tx.Rollback()
 		logger := zapLogger.GetZapLogger(false)
 		zapLogger.Prepare(logger).
 			Development().
 			Level(zap.ErrorLevel).
-			Commit(gm.Error.Error())
-		return gm.Error
+			Commit(err.Error())
+		return err
 	}
+	defer tx.Commit()
 
 	return nil
 }
