@@ -51,3 +51,10 @@ mysql:
   driver: "mysql"
   automigrate: true
   logger: true
+
+Nats:
+  username: ""
+  password: ""
+  auth: false
+  endpoints:
+    - "nats://nats:4222"
