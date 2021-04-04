@@ -22,6 +22,7 @@ func (a *Auth) RegisterUser(ctx context.Context, req *pb.UserRegisterRequest) (*
 		return &pb.UserRegisterResponse{Message: "ERROR"}, fmt.Errorf("error in hash password: ", err.Error())
 	}
 
+	//
 	err = user.Model.Register(jtrace.Tracer.ContextWithSpan(ctx, span), user.User{
 		Username:  req.GetUsername(),
 		Password:  &password,
