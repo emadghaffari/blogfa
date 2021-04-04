@@ -3,7 +3,6 @@ package jtrace
 import (
 	"blogfa/auth/config"
 	"context"
-	"fmt"
 	"io"
 
 	zapLogger "blogfa/auth/pkg/logger"
@@ -34,7 +33,6 @@ type itracer interface {
 type jtracer struct{}
 
 func (j *jtracer) Connect() (io.Closer, error) {
-	defer fmt.Printf("Jaeger loaded successfully \n")
 	// Sample configuration for testing. Use constant sampling to sample every trace
 	// and enable LogSpan to log every span via configured Logger.
 	cfg := jaegercfg.Configuration{
