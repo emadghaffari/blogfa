@@ -6,12 +6,12 @@ import (
 	"time"
 )
 
-var(
+var (
 	Model UserInterface = &User{}
 )
 
-type UserInterface interface{
-	Register(ctx context.Context,user User) error
+type UserInterface interface {
+	Register(ctx context.Context, user User) error
 }
 
 // User model

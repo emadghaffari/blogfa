@@ -11,9 +11,13 @@ func (u *User) Register(ctx context.Context, user User) error {
 	defer span.Finish()
 	span.SetTag("register", "register user model")
 
-	if err := mysql.Storage.Create(jtrace.Tracer.ContextWithSpan(ctx, span), "users", user); err != nil {
+	tx := mysql.Storage.GetDatabase().Begin()
+
+	if err := tx.Create(&user).Error; err != nil {
+		tx.Rollback()
 		return err
 	}
+	defer tx.Commit()
 
 	return nil
 }
