@@ -57,6 +57,22 @@ func (a *Auth) RegisterProvider(ctx context.Context, req *pb.ProviderRegisterReq
 		return &pb.ProviderRegisterResponse{Message: "ERROR"}, fmt.Errorf("error in hash password: ", err.Error())
 	}
 
+	// create new user requested.
+	_, err = user.Model.Register(jtrace.Tracer.ContextWithSpan(ctx, span), user.User{
+		Username:  req.GetUsername(),
+		Password:  &password,
+		Name:      req.GetName(),
+		LastName:  req.GetLastName(),
+		Phone:     req.GetPhone(),
+		Email:     req.GetEmail(),
+		BirthDate: req.GetBirthDate(),
+		Gender:    req.GetGender().String(),
+		RoleID:    1, // USER
+	})
+	if err != nil {
+		return &pb.ProviderRegisterResponse{Message: "ERROR"}, fmt.Errorf("error in store user: %s", err.Error())
+	}
+
 	child := jtrace.Tracer.ChildOf(span, "register")
 	child.SetTag("register", "after register provider")
 	defer child.Finish()
