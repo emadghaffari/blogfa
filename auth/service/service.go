@@ -21,7 +21,7 @@ func (a *Auth) RegisterUser(ctx context.Context, req *pb.UserRegisterRequest) (*
 
 	password, err := cript.Hash(req.GetPassword())
 	if err != nil {
-		return &pb.UserRegisterResponse{Message: "ERROR"}, fmt.Errorf("error in hash password: ", err.Error())
+		return &pb.UserRegisterResponse{Message: "ERROR"}, fmt.Errorf("error in hash password: %s", err.Error())
 	}
 
 	// create new user requested.
@@ -55,7 +55,7 @@ func (a *Auth) RegisterProvider(ctx context.Context, req *pb.ProviderRegisterReq
 
 	password, err := cript.Hash(req.GetPassword())
 	if err != nil {
-		return &pb.ProviderRegisterResponse{Message: "ERROR"}, fmt.Errorf("error in hash password: ", err.Error())
+		return &pb.ProviderRegisterResponse{Message: "ERROR"}, fmt.Errorf("error in hash password: %s", err.Error())
 	}
 
 	// create new user requested.
@@ -83,7 +83,7 @@ func (a *Auth) RegisterProvider(ctx context.Context, req *pb.ProviderRegisterReq
 		ShebaNumber: req.GetShebaNumber(),
 		Address:     req.GetAddress(),
 	}); err != nil {
-		return &pb.ProviderRegisterResponse{Message: "ERROR"}, fmt.Errorf("error in store new provider: ", err.Error())
+		return &pb.ProviderRegisterResponse{Message: "ERROR"}, fmt.Errorf("error in store new provider: %s", err.Error())
 	}
 
 	child := jtrace.Tracer.ChildOf(span, "register")
