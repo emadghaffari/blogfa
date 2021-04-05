@@ -1,6 +1,7 @@
 package service
 
 import (
+	"blogfa/auth/model/provider"
 	"blogfa/auth/model/user"
 	"blogfa/auth/pkg/cript"
 	"blogfa/auth/pkg/jtrace"
@@ -58,7 +59,7 @@ func (a *Auth) RegisterProvider(ctx context.Context, req *pb.ProviderRegisterReq
 	}
 
 	// create new user requested.
-	_, err = user.Model.Register(jtrace.Tracer.ContextWithSpan(ctx, span), user.User{
+	user, err := user.Model.Register(jtrace.Tracer.ContextWithSpan(ctx, span), user.User{
 		Username:  req.GetUsername(),
 		Password:  &password,
 		Name:      req.GetName(),
@@ -71,6 +72,18 @@ func (a *Auth) RegisterProvider(ctx context.Context, req *pb.ProviderRegisterReq
 	})
 	if err != nil {
 		return &pb.ProviderRegisterResponse{Message: "ERROR"}, fmt.Errorf("error in store user: %s", err.Error())
+	}
+
+	if err := provider.Model.Register(jtrace.Tracer.ContextWithSpan(ctx, span), provider.Provider{
+		UserID:      user.ID,
+		FixedNumber: req.GetFixedNumber(),
+		Company:     req.GetCompany(),
+		Card:        req.GetCard(),
+		CardNumber:  req.GetCardNumber(),
+		ShebaNumber: req.GetShebaNumber(),
+		Address:     req.GetAddress(),
+	}); err != nil {
+		return &pb.ProviderRegisterResponse{Message: "ERROR"}, fmt.Errorf("error in store new provider: ", err.Error())
 	}
 
 	child := jtrace.Tracer.ChildOf(span, "register")
