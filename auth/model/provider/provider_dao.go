@@ -2,7 +2,12 @@ package provider
 
 import (
 	"blogfa/auth/model/user"
+	"context"
 	"time"
+)
+
+var (
+	Model ProviderInterface = &Provider{}
 )
 
 type Provider struct {
@@ -17,4 +22,8 @@ type Provider struct {
 	Address     string    `json:"address" validate:"required" gorm:"type:varchar(250);"`
 	CreatedAt   time.Time `json:"-"`
 	UpdatedAt   time.Time `json:"-"`
+}
+
+type ProviderInterface interface {
+	Register(ctx context.Context, user Provider) error
 }
