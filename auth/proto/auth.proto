@@ -55,6 +55,8 @@ message ProviderRegisterRequest {
     string shebaNumber = 10;
     string address = 11;
     Gender gender = 12;
+    string email = 13;
+    string birthDate = 14;
     enum Gender{
         MALE = 0;
         FMALE = 1;
