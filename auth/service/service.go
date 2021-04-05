@@ -12,6 +12,7 @@ import (
 // Auth service
 type Auth struct{}
 
+// RegisterUser, for create a new user
 func (a *Auth) RegisterUser(ctx context.Context, req *pb.UserRegisterRequest) (*pb.UserRegisterResponse, error) {
 	span := jtrace.Tracer.StartSpan("register-user")
 	defer span.Finish()
@@ -22,8 +23,8 @@ func (a *Auth) RegisterUser(ctx context.Context, req *pb.UserRegisterRequest) (*
 		return &pb.UserRegisterResponse{Message: "ERROR"}, fmt.Errorf("error in hash password: ", err.Error())
 	}
 
-	//
-	err = user.Model.Register(jtrace.Tracer.ContextWithSpan(ctx, span), user.User{
+	// create new user requested.
+	_, err = user.Model.Register(jtrace.Tracer.ContextWithSpan(ctx, span), user.User{
 		Username:  req.GetUsername(),
 		Password:  &password,
 		Name:      req.GetName(),
@@ -35,7 +36,7 @@ func (a *Auth) RegisterUser(ctx context.Context, req *pb.UserRegisterRequest) (*
 		RoleID:    1, // USER
 	})
 	if err != nil {
-		return &pb.UserRegisterResponse{Message: "ERROR"}, fmt.Errorf("error in hash password: %s", err.Error())
+		return &pb.UserRegisterResponse{Message: "ERROR"}, fmt.Errorf("error in store user: %s", err.Error())
 	}
 
 	child := jtrace.Tracer.ChildOf(span, "register")
@@ -44,9 +45,21 @@ func (a *Auth) RegisterUser(ctx context.Context, req *pb.UserRegisterRequest) (*
 
 	return &pb.UserRegisterResponse{Message: "DONE"}, nil
 }
+
+// RegisterProvider, for create new provider
 func (a *Auth) RegisterProvider(ctx context.Context, req *pb.ProviderRegisterRequest) (*pb.ProviderRegisterResponse, error) {
 	span := jtrace.Tracer.StartSpan("register-provider")
 	defer span.Finish()
+	span.SetTag("register", "register provider")
+
+	password, err := cript.Hash(req.GetPassword())
+	if err != nil {
+		return &pb.ProviderRegisterResponse{Message: "ERROR"}, fmt.Errorf("error in hash password: ", err.Error())
+	}
+
+	child := jtrace.Tracer.ChildOf(span, "register")
+	child.SetTag("register", "after register provider")
+	defer child.Finish()
 
 	return &pb.ProviderRegisterResponse{}, nil
 }
