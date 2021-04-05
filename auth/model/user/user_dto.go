@@ -6,6 +6,7 @@ import (
 	"context"
 )
 
+// Register method for register new user
 func (u *User) Register(ctx context.Context, user User) error {
 	span, _ := jtrace.Tracer.SpanFromContext(ctx, "Register_user")
 	defer span.Finish()
