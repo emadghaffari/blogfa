@@ -7,8 +7,8 @@ import (
 )
 
 // Register method for register new user
-func (u *User) Register(ctx context.Context, user User) error {
-	span, _ := jtrace.Tracer.SpanFromContext(ctx, "Register_user")
+func (u *User) Register(ctx context.Context, user User) (*User, error) {
+	span, _ := jtrace.Tracer.SpanFromContext(ctx, "register_user")
 	defer span.Finish()
 	span.SetTag("register", "register user model")
 
@@ -16,11 +16,11 @@ func (u *User) Register(ctx context.Context, user User) error {
 
 	if err := tx.Create(&user).Error; err != nil {
 		tx.Rollback()
-		return err
+		return nil, err
 	}
 	defer tx.Commit()
 
-	return nil
+	return &user, nil
 }
 
 func (u *User) Get() {

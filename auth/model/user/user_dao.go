@@ -11,7 +11,7 @@ var (
 )
 
 type UserInterface interface {
-	Register(ctx context.Context, user User) error
+	Register(ctx context.Context, user User) (*User, error)
 }
 
 // User model
