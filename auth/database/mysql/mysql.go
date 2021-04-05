@@ -3,7 +3,6 @@ package mysql
 import (
 	"blogfa/auth/config"
 	zapLogger "blogfa/auth/pkg/logger"
-	"context"
 	"fmt"
 	"sync"
 
@@ -26,7 +25,6 @@ type store interface {
 	First(dest interface{}, conds ...interface{}) *gorm.DB
 	Table(name string, args ...interface{}) *gorm.DB
 	Preload(query string, args ...interface{}) *gorm.DB
-	Create(ctx context.Context, table string, data interface{}) error
 }
 
 // mysql struct
@@ -86,22 +84,4 @@ func (m *msql) Table(name string, args ...interface{}) *gorm.DB {
 
 func (m *msql) Preload(query string, args ...interface{}) *gorm.DB {
 	return m.db.Preload(query, args...)
-}
-
-func (m *msql) Create(ctx context.Context, table string, data interface{}) error {
-	tx := m.GetDatabase().Begin()
-	defer tx.Commit()
-
-	if err := tx.Table(table).Create(&data).Error; err != nil {
-		tx.Rollback()
-		logger := zapLogger.GetZapLogger(false)
-		zapLogger.Prepare(logger).
-			Development().
-			Level(zap.ErrorLevel).
-			Commit(err.Error())
-		return err
-	}
-	defer tx.Commit()
-
-	return nil
 }
