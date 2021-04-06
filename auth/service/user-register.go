@@ -17,7 +17,7 @@ func (a *Auth) RegisterUser(ctx context.Context, req *pb.UserRegisterRequest) (*
 
 	password, err := cript.Hash(req.GetPassword())
 	if err != nil {
-		return &pb.UserRegisterResponse{Message: "ERROR"}, fmt.Errorf("error in hash password: %s", err.Error())
+		return &pb.UserRegisterResponse{Message: fmt.Sprintf("ERROR: %s", err.Error()), Status: &pb.Response{Code: 400, Message: "FAILED"}}, fmt.Errorf("error in hash password: %s", err.Error())
 	}
 
 	// create new user requested.
@@ -33,7 +33,7 @@ func (a *Auth) RegisterUser(ctx context.Context, req *pb.UserRegisterRequest) (*
 		RoleID:    1, // USER
 	})
 	if err != nil {
-		return &pb.UserRegisterResponse{Message: "ERROR"}, fmt.Errorf("error in store user: %s", err.Error())
+		return &pb.UserRegisterResponse{Message: fmt.Sprintf("ERROR: %s", err.Error()), Status: &pb.Response{Code: 400, Message: "FAILED"}}, fmt.Errorf("error in store user: %s", err.Error())
 	}
 
 	child := jtrace.Tracer.ChildOf(span, "register")
