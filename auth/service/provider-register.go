@@ -31,7 +31,7 @@ func (a *Auth) RegisterProvider(ctx context.Context, req *pb.ProviderRegisterReq
 		Email:     req.GetEmail(),
 		BirthDate: req.GetBirthDate(),
 		Gender:    req.GetGender().String(),
-		RoleID:    1, // USER
+		RoleID:    2, // PROVIDER
 	})
 	if err != nil {
 		return &pb.ProviderRegisterResponse{Message: fmt.Sprintf("ERROR: %s", err.Error()), Status: &pb.Response{Code: 400, Message: "FAILED"}}, fmt.Errorf("error in store user: %s", err.Error())
