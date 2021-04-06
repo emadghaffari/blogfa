@@ -40,5 +40,5 @@ func (a *Auth) RegisterUser(ctx context.Context, req *pb.UserRegisterRequest) (*
 	child.SetTag("register", "after register user")
 	defer child.Finish()
 
-	return &pb.UserRegisterResponse{Message: "DONE"}, nil
+	return &pb.UserRegisterResponse{Message: "user created successfully", Status: &pb.Response{Code: 200, Message: "SUCCESS"}}, nil
 }
