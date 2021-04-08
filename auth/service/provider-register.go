@@ -37,6 +37,7 @@ func (a *Auth) RegisterProvider(ctx context.Context, req *pb.ProviderRegisterReq
 		return &pb.ProviderRegisterResponse{Message: fmt.Sprintf("ERROR: %s", err.Error()), Status: &pb.Response{Code: 400, Message: "FAILED"}}, fmt.Errorf("error in store user: %s", err.Error())
 	}
 
+	// create provider
 	if err := provider.Model.Register(jtrace.Tracer.ContextWithSpan(ctx, span), provider.Provider{
 		UserID:      user.ID,
 		FixedNumber: req.GetFixedNumber(),
