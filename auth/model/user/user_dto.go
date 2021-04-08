@@ -23,6 +23,19 @@ func (u *User) Register(ctx context.Context, user User) (*User, error) {
 	return &user, nil
 }
 
-func (u *User) Get() {
+func (u *User) Get(ctx context.Context, table, text string) (*User, error) {
+	span, _ := jtrace.Tracer.SpanFromContext(ctx, "register_user")
+	defer span.Finish()
+	span.SetTag("register", "get user model")
 
+	tx := mysql.Storage.GetDatabase().Begin()
+
+	var user = User{}
+	if err := tx.Table(table).Where("username = ? OR email = ?", text, text).First(&user); err.Error != nil {
+		tx.Rollback()
+		return nil, err.Error
+	}
+	defer tx.Commit()
+
+	return &user, nil
 }
