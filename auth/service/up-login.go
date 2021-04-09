@@ -9,13 +9,16 @@ import (
 	"fmt"
 )
 
+// login with username or password
 func (a *Auth) UPLogin(ctx context.Context, req *pb.UPLoginRequest) (*pb.UPLoginResponse, error) {
 	span := jtrace.Tracer.StartSpan("up-login")
 	defer span.Finish()
-	span.SetTag("register", "username password login")
+	span.SetTag("login", "username password login")
 
+	// get user with email or username
 	user, err := user.Model.Get(jtrace.Tracer.ContextWithSpan(ctx, span), "users", "username = ? OR email = ?", req.GetUsername(), req.GetUsername())
 
+	// check password and errors
 	if err != nil || !cript.CheckHash(req.GetPassword(), *user.Password) {
 		return &pb.UPLoginResponse{
 			Message: "username or password not matched! ",
