@@ -1,6 +1,7 @@
 package service
 
 import (
+	"blogfa/auth/model/jwt"
 	"blogfa/auth/model/user"
 	"blogfa/auth/pkg/cript"
 	"blogfa/auth/pkg/jtrace"
@@ -29,8 +30,29 @@ func (a *Auth) UPLogin(ctx context.Context, req *pb.UPLoginRequest) (*pb.UPLogin
 		}, fmt.Errorf("invalid username or password")
 	}
 
+	jwt, err := jwt.Model.Generate(ctx, user)
+	if err != nil {
+		return &pb.UPLoginResponse{
+			Message: "error in generate accessToken try after 10 seconds!",
+			Status: &pb.Response{
+				Code:    403,
+				Message: "error in generate accessToken try after 10 seconds!",
+			},
+		}, fmt.Errorf("error in generate accessToken try after 10 seconds!")
+	}
+
 	return &pb.UPLoginResponse{
 		Message: "user loggedin successfully",
+		Token:   jwt.AccessToken,
+		User: &pb.User{
+			Username:  user.Username,
+			Name:      user.Name,
+			LastName:  user.LastName,
+			Phone:     user.Phone,
+			Email:     user.Email,
+			BirthDate: user.BirthDate,
+			Gender:    pb.User_Gender(pb.User_Gender_value[user.Gender]),
+		},
 		Status: &pb.Response{
 			Code:    200,
 			Message: "user loggedin successfully",
