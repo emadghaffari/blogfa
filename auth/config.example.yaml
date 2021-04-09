@@ -26,6 +26,9 @@ redis:
   db: 0
   host: "redis:6379"
   logger: ""
+  smsDuration: "500s"
+  smsCodeVerification: "100s"
+  userDuration: "1000000000s"
 
 multiInstanceMode: false
 
@@ -58,3 +61,7 @@ Nats:
   auth: false
   endpoints:
     - "nats://nats:4222"
+
+jwt:
+  secret: "xxxxxxxxxxxxx"
+  rSecret: "yyyyyyyyyyyyyyy"
