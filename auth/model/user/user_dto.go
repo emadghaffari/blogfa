@@ -24,9 +24,9 @@ func (u *User) Register(ctx context.Context, user User) (*User, error) {
 }
 
 func (u *User) Get(ctx context.Context, table string, query interface{}, args ...interface{}) (*User, error) {
-	span, _ := jtrace.Tracer.SpanFromContext(ctx, "register_user")
+	span, _ := jtrace.Tracer.SpanFromContext(ctx, "get user model")
 	defer span.Finish()
-	span.SetTag("register", "get user model")
+	span.SetTag("get", "get user model")
 
 	tx := mysql.Storage.GetDatabase().Begin()
 
