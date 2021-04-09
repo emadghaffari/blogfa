@@ -30,6 +30,7 @@ type rds struct {
 	db *redis.Client
 }
 
+// Connect, method for connect to redis
 func (r *rds) Connect(confs config.GlobalConfig) error {
 	var err error
 
@@ -90,6 +91,7 @@ func (r *rds) Get(ctx context.Context, key string, dest interface{}) error {
 	return json.Unmarshal([]byte(p), &dest)
 }
 
+// Del for delete keys in redis
 func (r *rds) Del(ctx context.Context, key ...string) error {
 	_, err := r.db.Del(ctx, key...).Result()
 	if err != nil {
