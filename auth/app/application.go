@@ -5,6 +5,7 @@ import (
 	"blogfa/auth/config"
 	"blogfa/auth/database/etcd"
 	"blogfa/auth/database/mysql"
+	"blogfa/auth/database/redis"
 	"blogfa/auth/pkg/jtrace"
 	zapLogger "blogfa/auth/pkg/logger"
 	pb "blogfa/auth/proto"
@@ -60,6 +61,10 @@ func StartApplication() {
 	}
 
 	if err := initDatabase(); err != nil {
+		return
+	}
+
+	if err := initRedis(); err != nil {
 		return
 	}
 
@@ -215,6 +220,18 @@ func initMessageBroker() error {
 	}
 
 	if err := broker.Nats.EncodedConn(); err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+// init Redis database
+func initRedis() error {
+	fmt.Printf("redis database loaded successfully \n")
+	if err := redis.Storage.Connect(config.Global); err != nil {
+		fmt.Println(err)
 		return err
 	}
 
