@@ -15,4 +15,5 @@ type GlobalConfig struct {
 	Redis       redis         `yaml:"redis"`
 	MYSQL       database      `yaml:"database"`
 	Nats        nats          `yaml:"nats"`
+	JWT         JWT           `yaml:"jwt"`
 }
