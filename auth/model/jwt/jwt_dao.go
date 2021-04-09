@@ -3,6 +3,7 @@ package jwt
 import (
 	"blogfa/auth/config"
 	"blogfa/auth/database/redis"
+	zapLogger "blogfa/auth/pkg/logger"
 	"blogfa/auth/pkg/token"
 	"context"
 	"encoding/json"
@@ -10,11 +11,13 @@ import (
 	"time"
 
 	jjwt "github.com/dgrijalva/jwt-go"
+	"go.uber.org/zap"
 )
 
 var (
 	// JWT variable instance of intef
-	JWT intef = &jwt{}
+	JWT    intef = &jwt{}
+	logger *zap.Logger
 )
 
 // jwt meths interface
@@ -38,6 +41,7 @@ type jwt struct {
 
 // Generate new jwt token and store into redis DB
 func (j *jwt) Generate(ctx context.Context, model interface{}) (*jwt, error) {
+	logger = zapLogger.GetZapLogger(false)
 
 	td, err := j.genJWT()
 	if err != nil {
@@ -74,6 +78,10 @@ func (j *jwt) genJWT() (*jwt, error) {
 	var err error
 	td.AccessToken, err = at.SignedString([]byte(config.Global.JWT.Secret))
 	if err != nil {
+		zapLogger.Prepare(logger).
+			Development().
+			Level(zap.ErrorLevel).
+			Commit(err.Error())
 		return nil, err
 	}
 	return td, nil
@@ -90,6 +98,10 @@ func (j *jwt) genRefJWT(td *jwt) error {
 	var err error
 	td.RefreshToken, err = rt.SignedString([]byte(config.Global.JWT.RSecret))
 	if err != nil {
+		zapLogger.Prepare(logger).
+			Development().
+			Level(zap.ErrorLevel).
+			Commit(err.Error())
 		return err
 	}
 	return nil
@@ -99,6 +111,10 @@ func (j *jwt) genRefJWT(td *jwt) error {
 func (j *jwt) store(ctx context.Context, model interface{}, td *jwt) error {
 	bt, err := json.Marshal(model)
 	if err != nil {
+		zapLogger.Prepare(logger).
+			Development().
+			Level(zap.ErrorLevel).
+			Commit(err.Error())
 		return fmt.Errorf("can not marshal data: %s", model)
 	}
 	at := time.Unix(td.AtExpires, 0) //converting Unix to UTC(to Time object)
@@ -106,6 +122,10 @@ func (j *jwt) store(ctx context.Context, model interface{}, td *jwt) error {
 
 	// make map for store in redis
 	if err := redis.Storage.Set(ctx, td.AccessUUID, string(bt), at.Sub(now)); err != nil {
+		zapLogger.Prepare(logger).
+			Development().
+			Level(zap.ErrorLevel).
+			Commit(err.Error())
 		return err
 	}
 	return nil
