@@ -23,6 +23,9 @@ var (
 // store interface is interface for store things into mysql
 type store interface {
 	Connect(config config.GlobalConfig) error
+	Set(ctx context.Context, key string, value interface{}, duration time.Duration) error
+	Get(ctx context.Context, key string, dest interface{}) error
+	Del(ctx context.Context, key ...string) error
 }
 
 // mysql struct
