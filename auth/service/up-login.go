@@ -14,13 +14,9 @@ func (a *Auth) UPLogin(ctx context.Context, req *pb.UPLoginRequest) (*pb.UPLogin
 	defer span.Finish()
 	span.SetTag("register", "username password login")
 
-	password, err := cript.Hash(req.GetPassword())
-	if err != nil {
-		return &pb.UPLoginResponse{Message: fmt.Sprintf("ERROR: %s", err.Error()), Status: &pb.Response{Code: 400, Message: "FAILED"}}, fmt.Errorf("error in hash password: %s", err.Error())
-	}
+	user, err := user.Model.Get(jtrace.Tracer.ContextWithSpan(ctx, span), "users", "username = ? OR email = ?", req.GetUsername(), req.GetUsername())
 
-	user, err := user.Model.Get(jtrace.Tracer.ContextWithSpan(ctx, span), "users", "username = ? OR email = ?", req.GetUsername())
-	if err != nil || user.Password != &password {
+	if err != nil || !cript.CheckHash(req.GetPassword(), *user.Password) {
 		return &pb.UPLoginResponse{
 			Message: "username or password not matched! ",
 			Status: &pb.Response{
