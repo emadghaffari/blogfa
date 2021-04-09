@@ -16,7 +16,7 @@ import (
 
 var (
 	// JWT variable instance of intef
-	JWT    intef = &jwt{}
+	Model  intef = &jwt{}
 	logger *zap.Logger
 )
 
