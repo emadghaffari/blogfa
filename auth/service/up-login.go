@@ -19,7 +19,7 @@ func (a *Auth) UPLogin(ctx context.Context, req *pb.UPLoginRequest) (*pb.UPLogin
 		return &pb.UPLoginResponse{Message: fmt.Sprintf("ERROR: %s", err.Error()), Status: &pb.Response{Code: 400, Message: "FAILED"}}, fmt.Errorf("error in hash password: %s", err.Error())
 	}
 
-	user, err := user.Model.Get(jtrace.Tracer.ContextWithSpan(ctx, span), "users", req.GetUsername())
+	user, err := user.Model.Get(jtrace.Tracer.ContextWithSpan(ctx, span), "users", "username = ? OR email = ?", req.GetUsername())
 	if err != nil || user.Password != &password {
 		return &pb.UPLoginResponse{
 			Message: "username or password not matched! ",
