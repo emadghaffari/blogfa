@@ -56,7 +56,7 @@ func (a *Auth) PLogin(ctx context.Context, req *pb.PLoginRequest) (*pb.PLoginRes
 		To:      user.Phone,
 	}
 	// publish to nats channel
-	broker.Nats.Publish(ctx, "service.notification.sms", notif)
+	broker.Nats.Publish(ctx, "service.notification.sms.auth", notif)
 
 	// return response for check the phone
 	return &pb.PLoginResponse{
