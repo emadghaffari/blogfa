@@ -61,6 +61,7 @@ func (a *Auth) PLogin(ctx context.Context, req *pb.PLoginRequest) (*pb.PLoginRes
 	// return response for check the phone
 	return &pb.PLoginResponse{
 		Message: "check your phone!",
+		Token:   jwt.AccessUUID,
 		Status: &pb.Response{
 			Code:    200,
 			Message: "successfully",

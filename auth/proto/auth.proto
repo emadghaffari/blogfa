@@ -109,5 +109,6 @@ message PLoginRequest {
 
 message PLoginResponse {
     string message = 1;
-    Response status = 2;
+    string token = 2;
+    Response status = 3;
 }
