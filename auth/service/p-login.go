@@ -1,17 +1,70 @@
 package service
 
 import (
+	"blogfa/auth/broker"
+	"blogfa/auth/config"
+	"blogfa/auth/model/jwt"
+	"blogfa/auth/model/user"
 	"blogfa/auth/pkg/jtrace"
+	"blogfa/auth/pkg/token"
 	pb "blogfa/auth/proto"
 	"context"
+	"fmt"
 )
 
 // Auth service
 type Auth struct{}
 
+// PLogin, login user with phone number with sms code
 func (a *Auth) PLogin(ctx context.Context, req *pb.PLoginRequest) (*pb.PLoginResponse, error) {
 	span := jtrace.Tracer.StartSpan("p-login")
 	defer span.Finish()
+	span.SetTag("login", "phone login")
 
-	return &pb.PLoginResponse{}, nil
+	// get user with email or username
+	user, err := user.Model.Get(jtrace.Tracer.ContextWithSpan(ctx, span), "users", "phone = ? ", req.GetPhone())
+	if err != nil {
+		return &pb.PLoginResponse{
+			Message: "invalid phone number",
+			Status: &pb.Response{
+				Code:    403,
+				Message: "invalid phone number",
+			},
+		}, fmt.Errorf("invalid phone number")
+	}
+
+	// generate jwt token
+	jwt, err := jwt.Model.Generate(ctx, user)
+	if err != nil {
+		return &pb.PLoginResponse{
+			Message: "error in generate accessToken try after 10 seconds!",
+			Status: &pb.Response{
+				Code:    403,
+				Message: "error in generate accessToken try after 10 seconds!",
+			},
+		}, fmt.Errorf("error in generate accessToken try after 10 seconds!")
+	}
+
+	// make a map for jwt and user
+	data := make(map[string]interface{}, 2)
+	data["jwt"] = jwt
+	data["user"] = user
+	notif := config.SMS{
+		Service: config.Global.Service.Name,
+		Token:   token.Generate(25),
+		Data:    data,
+		To:      user.Phone,
+	}
+
+	// publish to nats channel
+	broker.Nats.Publish(ctx, "service.notification.sms", notif)
+
+	// return response for check the phone
+	return &pb.PLoginResponse{
+		Message: "check your phone!",
+		Status: &pb.Response{
+			Code:    200,
+			Message: "successfully",
+		},
+	}, nil
 }
