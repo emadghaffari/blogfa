@@ -23,7 +23,7 @@ var (
 // jwt meths interface
 type intef interface {
 	Generate(ctx context.Context, model interface{}) (*jwt, error)
-	genJWT() (*jwt, error)
+	GenerateJWT() (*jwt, error)
 	genRefJWT(td *jwt) error
 	store(ctx context.Context, model interface{}, td *jwt) error
 	Get(ctx context.Context, token string, response interface{}) error
@@ -43,7 +43,7 @@ type jwt struct {
 func (j *jwt) Generate(ctx context.Context, model interface{}) (*jwt, error) {
 	logger = zapLogger.GetZapLogger(false)
 
-	td, err := j.genJWT()
+	td, err := j.GenerateJWT()
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +60,7 @@ func (j *jwt) Generate(ctx context.Context, model interface{}) (*jwt, error) {
 }
 
 // generate JWT tokens
-func (j *jwt) genJWT() (*jwt, error) {
+func (j *jwt) GenerateJWT() (*jwt, error) {
 	// create new jwt
 	td := &jwt{}
 	td.AtExpires = time.Now().Add(time.Duration(config.Global.Redis.UserDuration)).Unix()
