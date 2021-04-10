@@ -19,7 +19,7 @@ type UserInterface interface {
 type User struct {
 	ID        uint64    `gorm:"primaryKey"`
 	Username  string    `json:"username" validate:"required" gorm:"unique;not null;type:varchar(100);"`
-	Password  *string   `json:"password" validate:"required,gte=7" gorm:"type:varchar(100);"`
+	Password  *string   `json:"-" validate:"required,gte=7" gorm:"type:varchar(100);"`
 	Name      string    `json:"name" validate:"required" gorm:"type:varchar(100);"`
 	LastName  string    `json:"lastName" validate:"required" gorm:"type:varchar(100);"`
 	Phone     string    `json:"phone" validate:"required" gorm:"type:varchar(25);"`

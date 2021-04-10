@@ -31,7 +31,7 @@ func (u *User) Get(ctx context.Context, table string, query interface{}, args ..
 	tx := mysql.Storage.GetDatabase().Begin()
 
 	var user = User{}
-	if err := tx.Table(table).Where(query, args...).First(&user); err.Error != nil {
+	if err := tx.Preload("Role").Preload("Role.Permissions").Table(table).Where(query, args...).First(&user); err.Error != nil {
 		tx.Rollback()
 		return nil, err.Error
 	}
