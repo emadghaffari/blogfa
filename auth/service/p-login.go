@@ -34,7 +34,7 @@ func (a *Auth) PLogin(ctx context.Context, req *pb.PLoginRequest) (*pb.PLoginRes
 	}
 
 	// generate jwt token
-	jwt, err := jwt.Model.Generate(ctx, user)
+	jwt, err := jwt.Model.GenerateJWT()
 	if err != nil {
 		return &pb.PLoginResponse{
 			Message: "error in generate accessToken try after 10 seconds!",
@@ -47,15 +47,14 @@ func (a *Auth) PLogin(ctx context.Context, req *pb.PLoginRequest) (*pb.PLoginRes
 
 	// make a map for jwt and user
 	data := make(map[string]interface{}, 2)
-	data["jwt"] = jwt
-	data["user"] = user
+	data["jwt"] = *jwt
+	data["user"] = *user
 	notif := config.SMS{
 		Service: config.Global.Service.Name,
 		Token:   token.Generate(25),
 		Data:    data,
 		To:      user.Phone,
 	}
-
 	// publish to nats channel
 	broker.Nats.Publish(ctx, "service.notification.sms", notif)
 
