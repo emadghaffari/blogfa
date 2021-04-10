@@ -2,6 +2,7 @@ package service
 
 import (
 	"blogfa/auth/model/jwt"
+	"blogfa/auth/model/permission"
 	"blogfa/auth/model/user"
 	"blogfa/auth/pkg/cript"
 	"blogfa/auth/pkg/jtrace"
@@ -52,6 +53,10 @@ func (a *Auth) UPLogin(ctx context.Context, req *pb.UPLoginRequest) (*pb.UPLogin
 			Email:     user.Email,
 			BirthDate: user.BirthDate,
 			Gender:    pb.User_Gender(pb.User_Gender_value[user.Gender]),
+			Role: &pb.Role{
+				Name:         user.Role.Name,
+				Permisttions: permission.ToList(user.Role.Permissions),
+			},
 		},
 		Status: &pb.Response{
 			Code:    200,
