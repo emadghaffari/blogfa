@@ -23,6 +23,7 @@ func (u *User) Register(ctx context.Context, user User) (*User, error) {
 	return &user, nil
 }
 
+// Get method, get a user with table name, query and args for search
 func (u *User) Get(ctx context.Context, table string, query interface{}, args ...interface{}) (*User, error) {
 	span, _ := jtrace.Tracer.SpanFromContext(ctx, "get user model")
 	defer span.Finish()
