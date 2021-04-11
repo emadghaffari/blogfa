@@ -10,6 +10,12 @@ var (
 	Model ProviderInterface = &Provider{}
 )
 
+// ProviderInterface interface
+type ProviderInterface interface {
+	Register(ctx context.Context, user Provider) error
+}
+
+// Provider struct
 type Provider struct {
 	ID          uint64    `gorm:"primaryKey"`
 	UserID      uint64    `json:"-"`
@@ -22,8 +28,4 @@ type Provider struct {
 	Address     string    `json:"address" validate:"required" gorm:"type:varchar(250);"`
 	CreatedAt   time.Time `json:"-"`
 	UpdatedAt   time.Time `json:"-"`
-}
-
-type ProviderInterface interface {
-	Register(ctx context.Context, user Provider) error
 }

@@ -6,6 +6,7 @@ import (
 	"context"
 )
 
+// Register method, register a provider
 func (p *Provider) Register(ctx context.Context, prov Provider) error {
 	span, _ := jtrace.Tracer.SpanFromContext(ctx, "register_provider")
 	defer span.Finish()
