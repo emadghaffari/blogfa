@@ -31,6 +31,7 @@ func (a *Auth) UPLogin(ctx context.Context, req *pb.UPLoginRequest) (*pb.UPLogin
 		}, fmt.Errorf("invalid username or password")
 	}
 
+	// generate jwt token
 	jwt, err := jwt.Model.Generate(ctx, user)
 	if err != nil {
 		return &pb.UPLoginResponse{
@@ -42,6 +43,7 @@ func (a *Auth) UPLogin(ctx context.Context, req *pb.UPLoginRequest) (*pb.UPLogin
 		}, fmt.Errorf("error in generate accessToken try after 10 seconds!")
 	}
 
+	// return jwt,user
 	return &pb.UPLoginResponse{
 		Message: "user loggedin successfully",
 		Token:   jwt.AccessToken,
