@@ -16,6 +16,7 @@ func (a *Auth) RegisterProvider(ctx context.Context, req *pb.ProviderRegisterReq
 	defer span.Finish()
 	span.SetTag("register", "register provider")
 
+	// hash password for store into DB
 	password, err := cript.Hash(req.GetPassword())
 	if err != nil {
 		return &pb.ProviderRegisterResponse{Message: fmt.Sprintf("ERROR: %s", err.Error()), Status: &pb.Response{Code: 400, Message: "FAILED"}}, fmt.Errorf("error in hash password: %s", err.Error())
