@@ -55,6 +55,7 @@ func (a *Auth) PLogin(ctx context.Context, req *pb.PLoginRequest) (*pb.PLoginRes
 		Data:    data,
 		To:      user.Phone,
 	}
+
 	// publish to nats channel
 	broker.Nats.Publish(ctx, "service.notification.sms.auth", notif)
 
