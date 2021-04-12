@@ -112,3 +112,8 @@ message PLoginResponse {
     string token = 2;
     Response status = 3;
 }
+
+message CreateProviderRequest {}
+message CreateProviderResponse {}
+
+
