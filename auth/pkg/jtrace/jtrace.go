@@ -105,10 +105,12 @@ func (j *jtracer) ContextWithSpan(ctx context.Context, span opentracing.Span) co
 	return opentracing.ContextWithSpan(ctx, span)
 }
 
+// SpanFromContext method
 func (j *jtracer) SpanFromContext(ctx context.Context, name string, opts ...opentracing.StartSpanOption) (opentracing.Span, context.Context) {
 	return opentracing.StartSpanFromContext(ctx, name, opts...)
 }
 
+// ChildOf method
 func (j *jtracer) ChildOf(span opentracing.Span, name string) opentracing.Span {
 	return opentracing.StartSpan(name, opentracing.ChildOf(span.Context()))
 }
