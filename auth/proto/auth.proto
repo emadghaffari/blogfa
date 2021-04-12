@@ -123,3 +123,5 @@ message UpdateProviderResponse {}
 message AssignProviderToUserRequest {}
 message AssignProviderToUserResponse {}
 
+message ProvidersListRequest {}
+message ProvidersListResponse {}
