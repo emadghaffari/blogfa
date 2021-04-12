@@ -125,3 +125,6 @@ message AssignProviderToUserResponse {}
 
 message ProvidersListRequest {}
 message ProvidersListResponse {}
+
+message UsersListRequest {}
+message UsersListResponse {}
