@@ -2,10 +2,9 @@ package jtrace
 
 import (
 	"blogfa/auth/config"
+	zapLogger "blogfa/auth/pkg/logger"
 	"context"
 	"io"
-
-	zapLogger "blogfa/auth/pkg/logger"
 
 	"github.com/opentracing/opentracing-go"
 	"github.com/uber/jaeger-client-go"
@@ -32,6 +31,7 @@ type itracer interface {
 
 type jtracer struct{}
 
+// Connect method
 func (j *jtracer) Connect() (io.Closer, error) {
 	// Sample configuration for testing. Use constant sampling to sample every trace
 	// and enable LogSpan to log every span via configured Logger.
@@ -70,10 +70,12 @@ func (j *jtracer) Connect() (io.Closer, error) {
 	return closer, nil
 }
 
+// GetTracer method
 func (j *jtracer) GetTracer() opentracing.Tracer {
 	return opentracing.GlobalTracer()
 }
 
+// FromContext method
 func (j *jtracer) FromContext(ctx context.Context, startName string) opentracing.Span {
 
 	// if context has a span for tracing then use spanFromContext
@@ -89,10 +91,12 @@ func (j *jtracer) FromContext(ctx context.Context, startName string) opentracing
 	return opentracing.GlobalTracer().StartSpan(startName)
 }
 
+// StartSpan method
 func (j *jtracer) StartSpan(str string) opentracing.Span {
 	return opentracing.GlobalTracer().StartSpan(str)
 }
 
+// ContextWithSpan methd
 func (j *jtracer) ContextWithSpan(ctx context.Context, span opentracing.Span) context.Context {
 	if qr := ctx.Value("span"); qr != nil {
 		ctx := context.Background()
