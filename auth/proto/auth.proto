@@ -117,3 +117,5 @@ message CreateProviderRequest {}
 message CreateProviderResponse {}
 
 
+message UpdateProviderRequest {}
+message UpdateProviderResponse {}
