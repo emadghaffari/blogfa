@@ -128,3 +128,6 @@ message ProvidersListResponse {}
 
 message UsersListRequest {}
 message UsersListResponse {}
+
+message UpdateUserRequest {}
+message UpdateUserResponse {}
