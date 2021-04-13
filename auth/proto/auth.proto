@@ -20,7 +20,7 @@ service Auth {
     rpc UpdateUser (UpdateUserRequest) returns (Response);
 }
 
-message Status {
+message status {
     uint32 code = 1;
     string message = 2;
 }
@@ -83,7 +83,7 @@ message User {
 
 message Role {
     string Name = 1;
-    repeated string permission = 2;
+    repeated string permissions = 2;
 }
 
 message UPLoginRequest {
@@ -95,7 +95,7 @@ message UPLoginResponse {
     string message = 1;
     string token = 2;
     User user = 3;
-    Response status = 4;
+    status status = 4;
 }
 
 message PLoginRequest {
@@ -105,7 +105,7 @@ message PLoginRequest {
 message PLoginResponse {
     string message = 1;
     string token = 2;
-    Response status = 3;
+    status status = 3;
 }
 
 message CreateProviderRequest {
@@ -178,5 +178,5 @@ message UpdateUserRequest {
 
 message Response {
     string message = 1;
-    Status status = 2;
+    status status = 2;
 }
