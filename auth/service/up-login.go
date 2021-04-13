@@ -24,7 +24,7 @@ func (a *Auth) UPLogin(ctx context.Context, req *pb.UPLoginRequest) (*pb.UPLogin
 	if err != nil || !cript.CheckHash(req.GetPassword(), *user.Password) {
 		return &pb.UPLoginResponse{
 			Message: "username or password not matched! ",
-			Status: &pb.Response{
+			Status: &pb.Status{
 				Code:    403,
 				Message: "invalid username or password",
 			},
@@ -36,7 +36,7 @@ func (a *Auth) UPLogin(ctx context.Context, req *pb.UPLoginRequest) (*pb.UPLogin
 	if err != nil {
 		return &pb.UPLoginResponse{
 			Message: "error in generate accessToken try after 10 seconds!",
-			Status: &pb.Response{
+			Status: &pb.Status{
 				Code:    403,
 				Message: "error in generate accessToken try after 10 seconds!",
 			},
@@ -57,10 +57,10 @@ func (a *Auth) UPLogin(ctx context.Context, req *pb.UPLoginRequest) (*pb.UPLogin
 			Gender:    pb.User_Gender(pb.User_Gender_value[user.Gender]),
 			Role: &pb.Role{
 				Name:         user.Role.Name,
-				Permisttions: permission.ToList(user.Role.Permissions),
+				Permissions: permission.ToList(user.Role.Permissions),
 			},
 		},
-		Status: &pb.Response{
+		Status: &pb.Status{
 			Code:    200,
 			Message: "user loggedin successfully",
 		},
