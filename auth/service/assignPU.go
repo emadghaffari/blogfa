@@ -7,5 +7,5 @@ import (
 
 
 func (a *Auth) AssignProviderToUser(ctx context.Context, req *pb.AssignProviderToUserRequest) (*pb.Response, error)  {
-	
+	return &pb.Response{},nil
 }
