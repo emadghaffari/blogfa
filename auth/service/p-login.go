@@ -26,7 +26,7 @@ func (a *Auth) PLogin(ctx context.Context, req *pb.PLoginRequest) (*pb.PLoginRes
 	if err != nil {
 		return &pb.PLoginResponse{
 			Message: "invalid phone number",
-			Status: &pb.Response{
+			Status: &pb.Status{
 				Code:    403,
 				Message: "invalid phone number",
 			},
@@ -38,7 +38,7 @@ func (a *Auth) PLogin(ctx context.Context, req *pb.PLoginRequest) (*pb.PLoginRes
 	if err != nil {
 		return &pb.PLoginResponse{
 			Message: "error in generate accessToken try after 10 seconds!",
-			Status: &pb.Response{
+			Status: &pb.Status{
 				Code:    403,
 				Message: "error in generate accessToken try after 10 seconds!",
 			},
@@ -63,7 +63,7 @@ func (a *Auth) PLogin(ctx context.Context, req *pb.PLoginRequest) (*pb.PLoginRes
 	return &pb.PLoginResponse{
 		Message: "check your phone!",
 		Token:   jwt.AccessUUID,
-		Status: &pb.Response{
+		Status: &pb.Status{
 			Code:    200,
 			Message: "successfully",
 		},
