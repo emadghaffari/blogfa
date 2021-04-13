@@ -8,19 +8,19 @@ option go_package = "proto;proto";
 
 
 service Auth {
-	rpc RegisterUser (UserRegisterRequest) returns (UserRegisterResponse);
-	rpc RegisterProvider (ProviderRegisterRequest) returns (ProviderRegisterResponse);
+	rpc RegisterUser (UserRegisterRequest) returns (Response);
+	rpc RegisterProvider (ProviderRegisterRequest) returns (Response);
     rpc UPLogin (UPLoginRequest) returns (UPLoginResponse);
     rpc PLogin (PLoginRequest) returns (PLoginResponse);
-    rpc CreateProvider (CreateProviderRequest) returns (CreateProviderResponse);
-    rpc UpdateProvider (UpdateProviderRequest) returns (UpdateProviderResponse);
-    rpc AssignProviderToUser (AssignProviderToUserRequest) returns (AssignProviderToUserResponse);
+    rpc CreateProvider (CreateProviderRequest) returns (Response);
+    rpc UpdateProvider (UpdateProviderRequest) returns (Response);
+    rpc AssignProviderToUser (AssignProviderToUserRequest) returns (Response);
     rpc SearchUser (SearchRequest) returns (stream User);
     rpc SearchProvider (SearchRequest) returns (stream Provider);
-    rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse);
+    rpc UpdateUser (UpdateUserRequest) returns (Response);
 }
 
-message Response {
+message Status {
     uint32 code = 1;
     string message = 2;
 }
@@ -40,11 +40,6 @@ message UserRegisterRequest {
         FMALE = 1;
         NONE = 2;
     }
-}
-
-message UserRegisterResponse {
-    string message = 1;
-    Response status = 2;
 }
 
 // register provider
@@ -69,12 +64,6 @@ message ProviderRegisterRequest {
         NONE = 2;
     }
 }
-
-message ProviderRegisterResponse {
-    string message = 1;
-    Response status = 2;
-}
-
 
 message User {
     string username = 1;
@@ -130,10 +119,6 @@ message CreateProviderRequest {
     string token = 8;
 
 }
-message CreateProviderResponse {
-    string message = 1;
-    Response status = 2;
-}
 
 
 message UpdateProviderRequest {
@@ -147,20 +132,14 @@ message UpdateProviderRequest {
     string userID = 8;
     string token = 9;
 }
-message UpdateProviderResponse {
-    string message = 1;
-    Response status = 2;
-}
+
 
 message AssignProviderToUserRequest {
     string userID = 1;
     string providerID = 2;
     string token = 3;
 }
-message AssignProviderToUserResponse {
-    string message = 1;
-    Response status = 2;
-}
+
 
 message SearchRequest {
     string token = 1;
@@ -168,6 +147,7 @@ message SearchRequest {
     string to = 3;
     string search = 4;
 }
+
 message Provider {
     string ID = 1;
     string fixedNumber = 2;
@@ -195,7 +175,8 @@ message UpdateUserRequest {
         NONE = 2;
     }
 }
-message UpdateUserResponse {
+
+message Response {
     string message = 1;
-    Response status = 2;
+    Status status = 2;
 }
