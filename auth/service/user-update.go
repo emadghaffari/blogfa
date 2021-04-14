@@ -5,6 +5,7 @@ import (
 	"context"
 )
 
+// UpdateUser method for update users
 func (a *Auth) UpdateUser(ctx context.Context, stream *pb.UpdateUserRequest) (*pb.Response, error) {
-	return &pb.Response{},nil
+	return &pb.Response{}, nil
 }
