@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	jjwt "github.com/dgrijalva/jwt-go"
@@ -112,4 +113,36 @@ func (j *jwt) Get(ctx context.Context, token string, response interface{}) error
 		return err
 	}
 	return nil
+}
+
+// Verify a token
+func (j *jwt) Verify(tk string) (string, error) {
+	strArr := strings.Split(tk, " ")
+	if len(strArr) != 2 {
+		return "", fmt.Errorf("invalid JWT token")
+	}
+	token, err := jjwt.Parse(strArr[1], func(token *jjwt.Token) (interface{}, error) {
+		//Make sure that the token method conform to "SigningMethodHMAC"
+		if _, ok := token.Method.(*jjwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(config.Global.JWT.Secret), nil
+	})
+	if err != nil {
+		return "", err
+	}
+	if _, ok := token.Claims.(jjwt.Claims); !ok && !token.Valid {
+		return "", err
+	}
+
+	claims, ok := token.Claims.(jjwt.MapClaims)
+	if ok && token.Valid {
+		AccessUUID, ok := claims["uuid"].(string)
+		if !ok {
+			return "", fmt.Errorf("Error in claims uuid from client")
+		}
+
+		return AccessUUID, nil
+	}
+	return "", err
 }

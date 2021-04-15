@@ -19,6 +19,7 @@ type intef interface {
 	genRefJWT(td *jwt) error
 	store(ctx context.Context, model interface{}, td *jwt) error
 	Get(ctx context.Context, token string, response interface{}) error
+	Verify(tk string) (string, error)
 }
 
 // jwt struct
