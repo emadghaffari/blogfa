@@ -135,9 +135,10 @@ message UpdateProviderRequest {
 
 
 message AssignProviderToUserRequest {
-    string userID = 1;
-    string providerID = 2;
-    string token = 3;
+    string nuserID = 1;
+    string ouserID = 2;
+    string providerID = 3;
+    string token = 4;
 }
 
 
@@ -169,6 +170,7 @@ message UpdateUserRequest {
     string email = 6;
     string birthDate = 7;
     Role Role = 8;
+    string token = 9;
     enum Gender{
         MALE = 0;
         FMALE = 1;
