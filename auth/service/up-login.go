@@ -9,6 +9,7 @@ import (
 	pb "blogfa/auth/proto"
 	"context"
 	"fmt"
+	"net/http"
 )
 
 // login with username or password
@@ -25,7 +26,7 @@ func (a *Auth) UPLogin(ctx context.Context, req *pb.UPLoginRequest) (*pb.UPLogin
 		return &pb.UPLoginResponse{
 			Message: "username or password not matched! ",
 			Status: &pb.Status{
-				Code:    403,
+				Code:    http.StatusInternalServerError,
 				Message: "invalid username or password",
 			},
 		}, fmt.Errorf("invalid username or password")
@@ -37,7 +38,7 @@ func (a *Auth) UPLogin(ctx context.Context, req *pb.UPLoginRequest) (*pb.UPLogin
 		return &pb.UPLoginResponse{
 			Message: "error in generate accessToken try after 10 seconds!",
 			Status: &pb.Status{
-				Code:    403,
+				Code:    http.StatusInternalServerError,
 				Message: "error in generate accessToken try after 10 seconds!",
 			},
 		}, fmt.Errorf("error in generate accessToken try after 10 seconds!")
@@ -56,12 +57,12 @@ func (a *Auth) UPLogin(ctx context.Context, req *pb.UPLoginRequest) (*pb.UPLogin
 			BirthDate: user.BirthDate,
 			Gender:    pb.User_Gender(pb.User_Gender_value[user.Gender]),
 			Role: &pb.Role{
-				Name:         user.Role.Name,
+				Name:        user.Role.Name,
 				Permissions: permission.ToList(user.Role.Permissions),
 			},
 		},
 		Status: &pb.Status{
-			Code:    200,
+			Code:    http.StatusOK,
 			Message: "user loggedin successfully",
 		},
 	}, nil

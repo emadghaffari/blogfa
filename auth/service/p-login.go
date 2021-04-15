@@ -10,6 +10,7 @@ import (
 	pb "blogfa/auth/proto"
 	"context"
 	"fmt"
+	"net/http"
 )
 
 // Auth service
@@ -27,7 +28,7 @@ func (a *Auth) PLogin(ctx context.Context, req *pb.PLoginRequest) (*pb.PLoginRes
 		return &pb.PLoginResponse{
 			Message: "invalid phone number",
 			Status: &pb.Status{
-				Code:    403,
+				Code:    http.StatusInternalServerError,
 				Message: "invalid phone number",
 			},
 		}, fmt.Errorf("invalid phone number")
@@ -39,7 +40,7 @@ func (a *Auth) PLogin(ctx context.Context, req *pb.PLoginRequest) (*pb.PLoginRes
 		return &pb.PLoginResponse{
 			Message: "error in generate accessToken try after 10 seconds!",
 			Status: &pb.Status{
-				Code:    403,
+				Code:    http.StatusInternalServerError,
 				Message: "error in generate accessToken try after 10 seconds!",
 			},
 		}, fmt.Errorf("error in generate accessToken try after 10 seconds!")
@@ -64,7 +65,7 @@ func (a *Auth) PLogin(ctx context.Context, req *pb.PLoginRequest) (*pb.PLoginRes
 		Message: "check your phone!",
 		Token:   jwt.AccessUUID,
 		Status: &pb.Status{
-			Code:    200,
+			Code:    http.StatusOK,
 			Message: "successfully",
 		},
 	}, nil

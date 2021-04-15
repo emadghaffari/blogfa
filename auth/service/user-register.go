@@ -7,6 +7,7 @@ import (
 	pb "blogfa/auth/proto"
 	"context"
 	"fmt"
+	"net/http"
 )
 
 // RegisterUser, for create a new user
@@ -17,7 +18,7 @@ func (a *Auth) RegisterUser(ctx context.Context, req *pb.UserRegisterRequest) (*
 
 	password, err := cript.Hash(req.GetPassword())
 	if err != nil {
-		return &pb.Response{Message: fmt.Sprintf("ERROR: %s", err.Error()), Status: &pb.Status{Code: 400, Message: "FAILED"}}, fmt.Errorf("error in hash password: %s", err.Error())
+		return &pb.Response{Message: fmt.Sprintf("ERROR: %s", err.Error()), Status: &pb.Status{Code: http.StatusInternalServerError, Message: "FAILED"}}, fmt.Errorf("error in hash password: %s", err.Error())
 	}
 
 	// create new user requested.
@@ -33,12 +34,12 @@ func (a *Auth) RegisterUser(ctx context.Context, req *pb.UserRegisterRequest) (*
 		RoleID:    1, // USER
 	})
 	if err != nil {
-		return &pb.Response{Message: fmt.Sprintf("ERROR: %s", err.Error()), Status: &pb.Status{Code: 400, Message: "FAILED"}}, fmt.Errorf("error in store user: %s", err.Error())
+		return &pb.Response{Message: fmt.Sprintf("ERROR: %s", err.Error()), Status: &pb.Status{Code: http.StatusInternalServerError, Message: "FAILED"}}, fmt.Errorf("error in store user: %s", err.Error())
 	}
 
 	child := jtrace.Tracer.ChildOf(span, "register")
 	child.SetTag("register", "after register user")
 	defer child.Finish()
 
-	return &pb.Response{Message: "user created successfully", Status: &pb.Status{Code: 200, Message: "SUCCESS"}}, nil
+	return &pb.Response{Message: "user created successfully", Status: &pb.Status{Code: http.StatusOK, Message: "SUCCESS"}}, nil
 }
