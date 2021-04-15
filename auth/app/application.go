@@ -34,7 +34,7 @@ var logger *zap.Logger
 
 // StartApplication func
 func StartApplication() {
-	fmt.Println("--------------------------------")
+	fmt.Println("\n\n--------------------------------")
 
 	// if go code crashed we get error and line
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
@@ -80,7 +80,7 @@ func StartApplication() {
 	initMetricsEndpoint(g)
 	initCancelInterrupt(g)
 
-	fmt.Println("--------------------------------")
+	fmt.Printf("--------------------------------\n\n")
 	if err := g.Run(); err != nil {
 		zapLogger.Prepare(logger).Development().Level(zap.ErrorLevel).Commit("server stopped")
 	}
