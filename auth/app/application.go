@@ -56,7 +56,9 @@ func StartApplication() {
 	defer closer.Close()
 
 	if viper.GetString("environment") == "production" {
-		initConfigServer()
+		if err := initConfigServer(); err != nil {
+			fmt.Println(err.Error())
+		}
 		defer etcd.Storage.GetClient().Close()
 	}
 
@@ -177,21 +179,24 @@ func initJaeger() (io.Closer, error) {
 // in production you load envs from etcd storage
 // you can change, add or delete watch keys
 // watches example: key: redis - value: {"password":"****","address":"***:6985","db":"0",....}
-func initConfigServer() {
-	fmt.Printf("etcd storage loaded successfully \n")
+func initConfigServer() error {
+	defer fmt.Printf("etcd storage loaded successfully \n")
 	if err := etcd.Storage.Connect(); err != nil {
-		return
+		return err
 	}
 
 	// loop over watchList
 	for _, key := range config.Global.ETCD.WatchList {
 
 		// get configs for first time on app starts
-		etcd.Storage.GetKey(context.Background(), key, func(kv *mvccpb.KeyValue) {
+		err := etcd.Storage.GetKey(context.Background(), key, func(kv *mvccpb.KeyValue) {
 			// set configs from storage to struct - if exists in Set method
 			config.Global.Set(string(kv.Key), kv.Value)
 
 		}, clientv3.WithPrefix())
+		if err != nil {
+			return err
+		}
 
 		// start to watch keys
 		etcd.Storage.WatchKey(context.Background(), key, func(e *clientv3.Event) {
@@ -203,7 +208,7 @@ func initConfigServer() {
 	}
 
 	// apply service discovery - put service details
-	etcd.Storage.Put(context.Background(), config.Global.Service.Name, config.Global.GetService())
+	return etcd.Storage.Put(context.Background(), config.Global.Service.Name, config.Global.GetService())
 }
 
 // init mysql database
