@@ -162,14 +162,14 @@ message Provider {
 }
 
 message UpdateUserRequest {
-    string ID = 1;
+    uint64 ID = 1;
     Gender gender = 2;
     string name = 3;
     string lastName = 4;
     string phone = 5;
     string email = 6;
     string birthDate = 7;
-    Role Role = 8;
+    uint64 Role = 8;
     string token = 9;
     enum Gender{
         MALE = 0;
