@@ -20,12 +20,12 @@ func (a *Auth) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.R
 			Message: "user not verified",
 			Status: &pb.Status{
 				Code:    http.StatusUnauthorized,
-				Message: "SUCCESS",
+				Message: "FAILED",
 			},
 		}, nil
 	}
 
-	user.Model.Update(jtrace.Tracer.ContextWithSpan(ctx, span), user.User{
+	if err := user.Model.Update(jtrace.Tracer.ContextWithSpan(ctx, span), user.User{
 		ID:        req.GetID(),
 		Name:      req.GetName(),
 		LastName:  req.GetLastName(),
@@ -34,7 +34,15 @@ func (a *Auth) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.R
 		BirthDate: req.GetBirthDate(),
 		Gender:    req.GetGender().String(),
 		RoleID:    req.GetRole(),
-	})
+	}); err != nil {
+		return &pb.Response{
+			Message: "user not updated successfully",
+			Status: &pb.Status{
+				Code:    http.StatusInternalServerError,
+				Message: "FAILED",
+			},
+		}, nil
+	}
 
 	return &pb.Response{
 		Message: "user successfully updated",
