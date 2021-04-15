@@ -2,6 +2,7 @@ package service
 
 import (
 	"blogfa/auth/model/jwt"
+	"blogfa/auth/model/user"
 	"blogfa/auth/pkg/jtrace"
 	pb "blogfa/auth/proto"
 	"context"
@@ -23,6 +24,17 @@ func (a *Auth) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.R
 			},
 		}, nil
 	}
+
+	user.Model.Update(jtrace.Tracer.ContextWithSpan(ctx, span), user.User{
+		ID:        req.GetID(),
+		Name:      req.GetName(),
+		LastName:  req.GetLastName(),
+		Phone:     req.GetPhone(),
+		Email:     req.GetEmail(),
+		BirthDate: req.GetBirthDate(),
+		Gender:    req.GetGender().String(),
+		RoleID:    req.GetRole(),
+	})
 
 	return &pb.Response{
 		Message: "user successfully updated",
