@@ -13,6 +13,7 @@ var (
 type UserInterface interface {
 	Register(ctx context.Context, user User) (*User, error)
 	Get(ctx context.Context, table string, query interface{}, args ...interface{}) (*User, error)
+	Update(ctx context.Context, user User) error
 }
 
 // User model

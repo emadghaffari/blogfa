@@ -40,3 +40,8 @@ func (u *User) Get(ctx context.Context, table string, query interface{}, args ..
 
 	return &user, nil
 }
+
+func (u User) Update(ctx context.Context, user User) error {
+
+	return nil
+}
