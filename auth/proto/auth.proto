@@ -162,7 +162,7 @@ message Provider {
 }
 
 message UpdateUserRequest {
-    uint64 ID = 1;
+    string ID = 1;
     Gender gender = 2;
     string name = 3;
     string lastName = 4;
