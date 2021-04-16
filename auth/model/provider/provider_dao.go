@@ -3,7 +3,8 @@ package provider
 import (
 	"blogfa/auth/model/user"
 	"context"
-	"time"
+
+	"gorm.io/gorm"
 )
 
 var (
@@ -17,8 +18,8 @@ type ProviderInterface interface {
 
 // Provider struct
 type Provider struct {
-	ID          uint64    `gorm:"primaryKey"`
-	UserID      uint64    `json:"-"`
+	gorm.Model
+	UserID      uint      `json:"-"`
 	User        user.User `json:"user" gorm:"foreignKey:UserID;references:ID"`
 	FixedNumber string    `json:"fixedNumber" validate:"required" gorm:"type:varchar(100);"`
 	Company     string    `json:"company" validate:"required" gorm:"type:varchar(100);"`
@@ -26,6 +27,4 @@ type Provider struct {
 	CardNumber  string    `json:"cardNumber" validate:"required" gorm:"type:varchar(25);"`
 	ShebaNumber string    `json:"shebaNumber" validate:"required" gorm:"type:varchar(100);"`
 	Address     string    `json:"address" validate:"required" gorm:"type:varchar(250);"`
-	CreatedAt   time.Time `json:"-"`
-	UpdatedAt   time.Time `json:"-"`
 }

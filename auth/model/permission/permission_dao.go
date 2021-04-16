@@ -1,13 +1,9 @@
 package permission
 
-import (
-	"time"
-)
+import "gorm.io/gorm"
 
 // Permission struct
 type Permission struct {
-	ID        uint64    `json:"-" gorm:"primaryKey"`
-	Name      string    `json:"name" gorm:"unique;not null;type:varchar(30);"`
-	CreatedAt time.Time `json:"-"`
-	UpdatedAt time.Time `json:"-"`
+	gorm.Model
+	Name string `json:"name" gorm:"unique;not null;type:varchar(30);"`
 }

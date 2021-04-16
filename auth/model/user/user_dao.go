@@ -3,7 +3,8 @@ package user
 import (
 	"blogfa/auth/model/role"
 	"context"
-	"time"
+
+	"gorm.io/gorm"
 )
 
 var (
@@ -12,13 +13,13 @@ var (
 
 type UserInterface interface {
 	Register(ctx context.Context, user User) (*User, error)
-	Get(ctx context.Context, table string, query interface{}, args ...interface{}) (*User, error)
+	Get(ctx context.Context, table string, query interface{}, args ...interface{}) (User, error)
 	Update(ctx context.Context, user User) error
 }
 
 // User model
 type User struct {
-	ID        uint64    `gorm:"primaryKey"`
+	gorm.Model
 	Username  string    `json:"username" validate:"required" gorm:"unique;not null;type:varchar(100);"`
 	Password  *string   `json:"-" validate:"required,gte=7" gorm:"type:varchar(100);"`
 	Name      string    `json:"name" validate:"required" gorm:"type:varchar(100);"`
@@ -29,6 +30,4 @@ type User struct {
 	Gender    string    `json:"gender" gorm:"type:varchar(20);"`
 	RoleID    uint64    `json:"-"`
 	Role      role.Role `json:"role" gorm:"foreignKey:RoleID;references:ID"`
-	CreatedAt time.Time `json:"-"`
-	UpdatedAt time.Time `json:"-"`
 }

@@ -34,7 +34,7 @@ func (u *User) Register(ctx context.Context, user User) (*User, error) {
 }
 
 // Get method, get a user with table name, query and args for search
-func (u *User) Get(ctx context.Context, table string, query interface{}, args ...interface{}) (*User, error) {
+func (u *User) Get(ctx context.Context, table string, query interface{}, args ...interface{}) (User, error) {
 	span, _ := jtrace.Tracer.SpanFromContext(ctx, "get user model")
 	defer span.Finish()
 	span.SetTag("model", "get user model")
@@ -50,13 +50,14 @@ func (u *User) Get(ctx context.Context, table string, query interface{}, args ..
 			Development().
 			Commit("env")
 		tx.Rollback()
-		return nil, err
+		return *u, err
 	}
 	defer tx.Commit()
 
-	return &user, nil
+	return user, nil
 }
 
+// Update method, for update users
 func (u User) Update(ctx context.Context, user User) error {
 	span, _ := jtrace.Tracer.SpanFromContext(ctx, "get user model")
 	defer span.Finish()
@@ -64,7 +65,22 @@ func (u User) Update(ctx context.Context, user User) error {
 
 	tx := mysql.Storage.GetDatabase().Begin()
 
-	if err := tx.Table("users").Where("id = ?", user.ID).Select("*").Updates(user).Error; err != nil {
+	usr, err := u.Get(ctx, "users", "username = ?", user.ID)
+	if err != nil {
+		return err
+	}
+
+	// update usr fileds
+	usr.Username = user.Username
+	usr.Name = user.Name
+	usr.LastName = user.LastName
+	usr.Phone = user.Phone
+	usr.Email = user.Email
+	usr.BirthDate = user.BirthDate
+	usr.Gender = user.Gender
+	usr.RoleID = user.RoleID
+
+	if err := tx.Table("users").Where("username = ?", user.Username).Select("*").Updates(&usr).Error; err != nil {
 		log := logger.GetZapLogger(false)
 		logger.Prepare(log).
 			Append(zap.Any("error", fmt.Sprintf("update user error: %s", err))).
@@ -74,6 +90,9 @@ func (u User) Update(ctx context.Context, user User) error {
 		tx.Rollback()
 		return err
 	}
+	tx.Commit()
 
 	return nil
 }
+
+//name,last_name,phone,email,birth_date,gender,role_id
