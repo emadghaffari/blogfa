@@ -13,6 +13,7 @@ import (
 )
 
 // login with username or password
+// ID is UserName
 func (a *Auth) UPLogin(ctx context.Context, req *pb.UPLoginRequest) (*pb.UPLoginResponse, error) {
 	span := jtrace.Tracer.StartSpan("up-login")
 	defer span.Finish()

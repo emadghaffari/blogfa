@@ -49,7 +49,7 @@ func (a *Auth) PLogin(ctx context.Context, req *pb.PLoginRequest) (*pb.PLoginRes
 	// make a map for jwt and user
 	data := make(map[string]interface{}, 2)
 	data["jwt"] = *jwt
-	data["user"] = *user
+	data["user"] = user
 	notif := config.SMS{
 		Service: config.Global.Service.Name,
 		Token:   token.Generate(25),

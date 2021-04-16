@@ -6,6 +6,7 @@ import (
 	"blogfa/auth/pkg/jtrace"
 	pb "blogfa/auth/proto"
 	"context"
+	"fmt"
 	"net/http"
 )
 
@@ -18,7 +19,7 @@ func (a *Auth) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.R
 	// verify the jwt token
 	if _, err := jwt.Model.Verify(req.GetToken()); err != nil {
 		return &pb.Response{
-			Message: "user not verified",
+			Message: fmt.Sprintf("user not verified: %s", err.Error()),
 			Status: &pb.Status{
 				Code:    http.StatusUnauthorized,
 				Message: "FAILED",
@@ -28,7 +29,7 @@ func (a *Auth) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.R
 
 	// update spesific user with userID
 	if err := user.Model.Update(jtrace.Tracer.ContextWithSpan(ctx, span), user.User{
-		ID:        req.GetID(),
+		Username:  req.GetID(),
 		Name:      req.GetName(),
 		LastName:  req.GetLastName(),
 		Phone:     req.GetPhone(),
