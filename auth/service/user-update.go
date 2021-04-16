@@ -15,6 +15,7 @@ func (a *Auth) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.R
 	defer span.Finish()
 	span.SetTag("service", "get details in service")
 
+	// verify the jwt token
 	if _, err := jwt.Model.Verify(req.GetToken()); err != nil {
 		return &pb.Response{
 			Message: "user not verified",
@@ -25,6 +26,7 @@ func (a *Auth) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.R
 		}, nil
 	}
 
+	// update spesific user with userID
 	if err := user.Model.Update(jtrace.Tracer.ContextWithSpan(ctx, span), user.User{
 		ID:        req.GetID(),
 		Name:      req.GetName(),
