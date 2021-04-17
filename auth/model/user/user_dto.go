@@ -94,10 +94,19 @@ func (u User) Update(ctx context.Context, user User) error {
 	return nil
 }
 
-func (u User) Search(ctx context.Context, from, to, search string) (User, error) {
+func (u User) Search(ctx context.Context, from, to, search int) error {
 	span, _ := jtrace.Tracer.SpanFromContext(ctx, "search user model")
 	defer span.Finish()
 	span.SetTag("model", fmt.Sprintf("search users"))
 
-	return u, nil
+	tx := mysql.Storage.GetDatabase().Begin()
+
+	rows, err := tx.Limit(to - from).Offset(from).Select("").Rows()
+	if err != nil {
+	}
+	for rows.Next() {
+		rows.Scan()
+	}
+
+	return nil
 }
