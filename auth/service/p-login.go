@@ -13,9 +13,6 @@ import (
 	"net/http"
 )
 
-// Auth service
-type Auth struct{}
-
 // PLogin, login user with phone number with sms code
 func (a *Auth) PLogin(ctx context.Context, req *pb.PLoginRequest) (*pb.PLoginResponse, error) {
 	span := jtrace.Tracer.StartSpan("p-login")
