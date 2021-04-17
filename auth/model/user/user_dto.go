@@ -71,7 +71,6 @@ func (u User) Update(ctx context.Context, user User) error {
 	}
 
 	// update usr fileds
-	usr.Username = user.Username
 	usr.Name = user.Name
 	usr.LastName = user.LastName
 	usr.Phone = user.Phone
