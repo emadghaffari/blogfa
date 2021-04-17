@@ -94,4 +94,10 @@ func (u User) Update(ctx context.Context, user User) error {
 	return nil
 }
 
-//name,last_name,phone,email,birth_date,gender,role_id
+func (u User) Search(ctx context.Context, from, to, search string) (User, error) {
+	span, _ := jtrace.Tracer.SpanFromContext(ctx, "search user model")
+	defer span.Finish()
+	span.SetTag("model", fmt.Sprintf("search users"))
+
+	return u, nil
+}
