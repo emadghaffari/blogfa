@@ -8,6 +8,9 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // UpdateUser method for update users
@@ -24,7 +27,7 @@ func (a *Auth) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.R
 				Code:    http.StatusUnauthorized,
 				Message: "FAILED",
 			},
-		}, nil
+		}, status.Errorf(codes.Internal, "user not verified")
 	}
 
 	// update spesific user with userID
@@ -44,7 +47,7 @@ func (a *Auth) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.R
 				Code:    http.StatusInternalServerError,
 				Message: "FAILED",
 			},
-		}, nil
+		}, status.Errorf(codes.Internal, "user not updated successfully")
 	}
 
 	return &pb.Response{
