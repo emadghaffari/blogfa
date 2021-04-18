@@ -9,8 +9,10 @@ import (
 	"blogfa/auth/pkg/token"
 	pb "blogfa/auth/proto"
 	"context"
-	"fmt"
 	"net/http"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // PLogin, login user with phone number with sms code
@@ -28,7 +30,7 @@ func (a *Auth) PLogin(ctx context.Context, req *pb.PLoginRequest) (*pb.PLoginRes
 				Code:    http.StatusInternalServerError,
 				Message: "invalid phone number",
 			},
-		}, fmt.Errorf("invalid phone number")
+		}, status.Errorf(codes.Internal, "invalid phone number")
 	}
 
 	// generate jwt token
@@ -40,7 +42,7 @@ func (a *Auth) PLogin(ctx context.Context, req *pb.PLoginRequest) (*pb.PLoginRes
 				Code:    http.StatusInternalServerError,
 				Message: "error in generate accessToken try after 10 seconds!",
 			},
-		}, fmt.Errorf("error in generate accessToken try after 10 seconds!")
+		}, status.Errorf(codes.Internal, "error in generate accessToken try after 10 seconds!")
 	}
 
 	// make a map for jwt and user
