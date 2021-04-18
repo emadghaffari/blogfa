@@ -8,8 +8,10 @@ import (
 	"blogfa/auth/pkg/jtrace"
 	pb "blogfa/auth/proto"
 	"context"
-	"fmt"
 	"net/http"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // login with username or password
@@ -30,7 +32,7 @@ func (a *Auth) UPLogin(ctx context.Context, req *pb.UPLoginRequest) (*pb.UPLogin
 				Code:    http.StatusInternalServerError,
 				Message: "invalid username or password",
 			},
-		}, fmt.Errorf("invalid username or password")
+		}, status.Errorf(codes.Internal, "invalid username or password")
 	}
 
 	// generate jwt token
@@ -42,7 +44,7 @@ func (a *Auth) UPLogin(ctx context.Context, req *pb.UPLoginRequest) (*pb.UPLogin
 				Code:    http.StatusInternalServerError,
 				Message: "error in generate accessToken try after 10 seconds!",
 			},
-		}, fmt.Errorf("error in generate accessToken try after 10 seconds!")
+		}, status.Errorf(codes.Internal, "error in generate accessToken try after 10 seconds!")
 	}
 
 	// return jwt,user
