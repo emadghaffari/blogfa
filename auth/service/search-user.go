@@ -2,9 +2,15 @@ package service
 
 import (
 	"blogfa/auth/model/jwt"
+	"blogfa/auth/model/user"
 	"blogfa/auth/pkg/jtrace"
 	pb "blogfa/auth/proto"
+	"context"
 	"fmt"
+	"strconv"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // SearchUser method for search user by users fields
@@ -16,7 +22,32 @@ func (a *Auth) SearchUser(req *pb.SearchRequest, stream pb.Auth_SearchUserServer
 
 	// verify the jwt token
 	if _, err := jwt.Model.Verify(req.GetToken()); err != nil {
-		return fmt.Errorf("user not verified: %s", err.Error())
+		return status.Errorf(codes.Internal, "user not verified: %s", err.Error())
+	}
+
+	// convert string to int
+	from, err := strconv.Atoi(req.GetFrom())
+	if err != nil {
+		return status.Errorf(codes.Internal, "invalid from number")
+	}
+
+	// convert string to int
+	to, err := strconv.Atoi(req.GetTo())
+	if err != nil {
+		return status.Errorf(codes.Internal, "invalid to number")
+	}
+
+	// search users
+	rows, err := user.Model.Search(jtrace.Tracer.ContextWithSpan(context.Background(), span), from, to, req.GetSearch())
+	if err != nil {
+		return status.Errorf(codes.Internal, "internal error for search users")
+	}
+
+	for rows.Next() {
+		usr := user.User{}
+		if err := rows.Scan(usr); err != nil {
+			status.Errorf(codes.Internal, fmt.Sprintf("interfnal error for get users"))
+		}
 	}
 
 	return nil
