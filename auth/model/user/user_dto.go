@@ -5,6 +5,7 @@ import (
 	"blogfa/auth/pkg/jtrace"
 	"blogfa/auth/pkg/logger"
 	"context"
+	"database/sql"
 	"fmt"
 
 	"go.uber.org/zap"
@@ -95,19 +96,25 @@ func (u User) Update(ctx context.Context, user User) error {
 }
 
 // Search method for search users
-func (u User) Search(ctx context.Context, from, to int, search string) error {
+func (u User) Search(ctx context.Context, from, to int, search string) (*sql.Rows, error) {
 	span, _ := jtrace.Tracer.SpanFromContext(ctx, "search user model")
 	defer span.Finish()
 	span.SetTag("model", fmt.Sprintf("search users"))
 
 	tx := mysql.Storage.GetDatabase().Begin()
 
-	rows, err := tx.Limit(to - from).Offset(from).Select("").Rows()
+	rows, err := tx.Limit(to - from).Offset(from).Select("*").Rows()
 	if err != nil {
+		log := logger.GetZapLogger(false)
+		logger.Prepare(log).
+			Append(zap.Any("error", fmt.Sprintf("update user error: %s", err))).
+			Level(zap.ErrorLevel).
+			Development().
+			Commit("env")
+		tx.Rollback()
+		return nil, err
 	}
-	for rows.Next() {
-		rows.Scan()
-	}
+	tx.Commit()
 
-	return nil
+	return rows, nil
 }
