@@ -42,13 +42,31 @@ func (a *Auth) SearchUser(req *pb.SearchRequest, stream pb.Auth_SearchUserServer
 	if err != nil {
 		return status.Errorf(codes.Internal, "internal error for search users")
 	}
+	defer rows.Close()
 
 	for rows.Next() {
 		usr := user.User{}
-		if err := rows.Scan(usr); err != nil {
-			status.Errorf(codes.Internal, fmt.Sprintf("interfnal error for get users"))
+		if err := rows.Scan(&usr.Username, &usr.Name, &usr.LastName, &usr.Phone, &usr.Email, &usr.Gender, &usr.RoleID); err != nil {
+			status.Errorf(codes.Internal, fmt.Sprintf("internal error for get users"))
 		}
+
+		stream.Send(&pb.User{
+			Gender:    pb.User_Gender(pb.User_Gender_value[usr.Gender]),
+			Name:      usr.Name,
+			LastName:  usr.LastName,
+			Phone:     usr.Phone,
+			Email:     usr.Email,
+			BirthDate: usr.BirthDate,
+			Role: &pb.Role{
+				Name: usr.Role.Name,
+			},
+		})
+		// if err != nil {
+		// 	status.Errorf(codes.Internal, fmt.Sprintf("internal error for get user"))
+		// }
 	}
+
+	fmt.Println("DONE")
 
 	return nil
 }
