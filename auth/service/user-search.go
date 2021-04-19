@@ -2,6 +2,7 @@ package service
 
 import (
 	"blogfa/auth/model/jwt"
+	"blogfa/auth/model/permission"
 	"blogfa/auth/model/user"
 	"blogfa/auth/pkg/jtrace"
 	pb "blogfa/auth/proto"
@@ -38,35 +39,29 @@ func (a *Auth) SearchUser(req *pb.SearchRequest, stream pb.Auth_SearchUserServer
 	}
 
 	// search users
-	rows, err := user.Model.Search(jtrace.Tracer.ContextWithSpan(context.Background(), span), from, to, req.GetSearch())
+	users, err := user.Model.Search(jtrace.Tracer.ContextWithSpan(context.Background(), span), from, to, req.GetSearch())
 	if err != nil {
 		return status.Errorf(codes.Internal, "internal error for search users")
 	}
-	defer rows.Close()
 
-	for rows.Next() {
-		usr := user.User{}
-		if err := rows.Scan(&usr.Username, &usr.Name, &usr.LastName, &usr.Phone, &usr.Email, &usr.Gender, &usr.RoleID); err != nil {
-			status.Errorf(codes.Internal, fmt.Sprintf("internal error for get users"))
-		}
-
-		stream.Send(&pb.User{
-			Gender:    pb.User_Gender(pb.User_Gender_value[usr.Gender]),
-			Name:      usr.Name,
-			LastName:  usr.LastName,
-			Phone:     usr.Phone,
-			Email:     usr.Email,
-			BirthDate: usr.BirthDate,
+	for _, user := range users {
+		err := stream.Send(&pb.User{
+			Username:  user.Username,
+			Gender:    pb.User_Gender(pb.User_Gender_value[user.Gender]),
+			Name:      user.Name,
+			LastName:  user.LastName,
+			Phone:     user.Phone,
+			Email:     user.Email,
+			BirthDate: user.BirthDate,
 			Role: &pb.Role{
-				Name: usr.Role.Name,
+				Name:        user.Role.Name,
+				Permissions: permission.ToList(user.Role.Permissions),
 			},
 		})
-		// if err != nil {
-		// 	status.Errorf(codes.Internal, fmt.Sprintf("internal error for get user"))
-		// }
+		if err != nil {
+			status.Errorf(codes.Internal, fmt.Sprintf("internal error for get user"))
+		}
 	}
-
-	fmt.Println("DONE")
 
 	return nil
 }
