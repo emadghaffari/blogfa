@@ -114,8 +114,8 @@ func (u User) Search(ctx context.Context, from, to int, search string) (*sql.Row
 		Or("email LIKE ?", "%"+search+"%").
 		Or("gender LIKE ?", "%"+search+"%").
 		Or("role_id LIKE ?", "%"+search+"%").
-		// Limit(to - from).
-		// Offset(from).
+		Limit(to - from).
+		Offset(from).
 		Select("username, name, last_name, phone, email, gender, role_id").Rows()
 	if err != nil {
 		log := logger.GetZapLogger(false)
