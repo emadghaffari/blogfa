@@ -16,7 +16,6 @@ import (
 
 // SearchUser method for search user by users fields
 func (a *Auth) SearchUser(req *pb.SearchRequest, stream pb.Auth_SearchUserServer) error {
-
 	span := jtrace.Tracer.StartSpan("search-user")
 	defer span.Finish()
 	span.SetTag("service", "start to search")
@@ -59,7 +58,7 @@ func (a *Auth) SearchUser(req *pb.SearchRequest, stream pb.Auth_SearchUserServer
 			},
 		})
 		if err != nil {
-			status.Errorf(codes.Internal, fmt.Sprintf("internal error for get user"))
+			return status.Errorf(codes.Internal, fmt.Sprintf("internal error for get user"))
 		}
 	}
 
