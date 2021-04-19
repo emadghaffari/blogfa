@@ -5,7 +5,6 @@ import (
 	"blogfa/auth/pkg/jtrace"
 	"blogfa/auth/pkg/logger"
 	"context"
-	"database/sql"
 	"fmt"
 
 	"go.uber.org/zap"
@@ -96,14 +95,15 @@ func (u User) Update(ctx context.Context, user User) error {
 }
 
 // Search method for search users
-func (u User) Search(ctx context.Context, from, to int, search string) (*sql.Rows, error) {
+func (u User) Search(ctx context.Context, from, to int, search string) ([]User, error) {
 	span, _ := jtrace.Tracer.SpanFromContext(ctx, "search user model")
 	defer span.Finish()
 	span.SetTag("model", fmt.Sprintf("search users"))
 
 	tx := mysql.Storage.GetDatabase().Begin()
 
-	rows, err := tx.
+	var users []User
+	err := tx.
 		Preload("Role").
 		Preload("Role.Permissions").
 		Table("users").
@@ -116,7 +116,8 @@ func (u User) Search(ctx context.Context, from, to int, search string) (*sql.Row
 		Or("role_id LIKE ?", "%"+search+"%").
 		Limit(to - from).
 		Offset(from).
-		Select("username, name, last_name, phone, email, gender, role_id").Rows()
+		Select("username, name, last_name, phone, email, gender, role_id, birth_date").
+		Find(&users).Error
 	if err != nil {
 		log := logger.GetZapLogger(false)
 		logger.Prepare(log).
@@ -129,5 +130,5 @@ func (u User) Search(ctx context.Context, from, to int, search string) (*sql.Row
 	}
 	// tx.Commit()
 
-	return rows, nil
+	return users, nil
 }

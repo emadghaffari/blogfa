@@ -3,7 +3,6 @@ package user
 import (
 	"blogfa/auth/model/role"
 	"context"
-	"database/sql"
 
 	"gorm.io/gorm"
 )
@@ -16,7 +15,7 @@ type UserInterface interface {
 	Register(ctx context.Context, user User) (*User, error)
 	Get(ctx context.Context, table string, query interface{}, args ...interface{}) (User, error)
 	Update(ctx context.Context, user User) error
-	Search(ctx context.Context, from, to int, search string) (*sql.Rows, error)
+	Search(ctx context.Context, from, to int, search string) ([]User, error)
 }
 
 // User model
