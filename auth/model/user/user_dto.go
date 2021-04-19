@@ -103,7 +103,20 @@ func (u User) Search(ctx context.Context, from, to int, search string) (*sql.Row
 
 	tx := mysql.Storage.GetDatabase().Begin()
 
-	rows, err := tx.Limit(to - from).Offset(from).Select("*").Rows()
+	rows, err := tx.
+		Preload("Role").
+		Preload("Role.Permissions").
+		Table("users").
+		Where("username LIKE ?", "%"+search+"%").
+		Or("name LIKE ?", "%"+search+"%").
+		Or("last_name LIKE ?", "%"+search+"%").
+		Or("phone LIKE ?", "%"+search+"%").
+		Or("email LIKE ?", "%"+search+"%").
+		Or("gender LIKE ?", "%"+search+"%").
+		Or("role_id LIKE ?", "%"+search+"%").
+		// Limit(to - from).
+		// Offset(from).
+		Select("username, name, last_name, phone, email, gender, role_id").Rows()
 	if err != nil {
 		log := logger.GetZapLogger(false)
 		logger.Prepare(log).
@@ -114,7 +127,7 @@ func (u User) Search(ctx context.Context, from, to int, search string) (*sql.Row
 		tx.Rollback()
 		return nil, err
 	}
-	tx.Commit()
+	// tx.Commit()
 
 	return rows, nil
 }
