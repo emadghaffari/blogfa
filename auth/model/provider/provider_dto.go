@@ -3,8 +3,11 @@ package provider
 import (
 	"blogfa/auth/database/mysql"
 	"blogfa/auth/pkg/jtrace"
+	"blogfa/auth/pkg/logger"
 	"context"
 	"fmt"
+
+	"go.uber.org/zap"
 )
 
 // Register method, register a provider
@@ -24,14 +27,67 @@ func (p *Provider) Register(ctx context.Context, prov Provider) error {
 	return nil
 }
 
+// Get method, get a Provider with table name, query and args for search
+func (p *Provider) Get(ctx context.Context, table string, query interface{}, args ...interface{}) (Provider, error) {
+	span, _ := jtrace.Tracer.SpanFromContext(ctx, "get Provider model")
+	defer span.Finish()
+	span.SetTag("model", "get Provider model")
+
+	tx := mysql.Storage.GetDatabase().Begin()
+
+	var provider = Provider{}
+	if err := tx.Preload("User").Table(table).Where(query, args...).First(&provider).Error; err != nil {
+		log := logger.GetZapLogger(false)
+		logger.Prepare(log).
+			Append(zap.Any("error", fmt.Sprintf("get Provider: %s", err))).
+			Level(zap.ErrorLevel).
+			Development().
+			Commit("env")
+		tx.Rollback()
+		return *p, err
+	}
+	defer tx.Commit()
+
+	return provider, nil
+}
+
+// Update method, update provider
+// first get provider with ID
+// then update provider fields with new fields and update database
 func (p *Provider) Update(ctx context.Context, prov Provider) error {
 	span, _ := jtrace.Tracer.SpanFromContext(ctx, "get provider model")
 	defer span.Finish()
 	span.SetTag("model", fmt.Sprintf("update provider with id: %d", prov.ID))
 
-	// tx := mysql.Storage.GetDatabase().Begin()
+	// get provder with ID
+	provider, err := p.Get(ctx, "providers", "id = ?", prov.ID)
+	if err != nil {
+		return err
+	}
 
-	// provider, err := tx.Get()
+	// update provider attrs
+	provider.FixedNumber = prov.FixedNumber
+	provider.Company = prov.Company
+	provider.CardNumber = prov.CardNumber
+	provider.ShebaNumber = prov.ShebaNumber
+	provider.Card = prov.Card
+	provider.Address = prov.Address
+
+	tx := mysql.Storage.GetDatabase().Begin()
+
+	// start to update provider
+	if err := tx.Table("providers").Where("id = ?", prov.ID).Select("*").Updates(&provider).Error; err != nil {
+		log := logger.GetZapLogger(false)
+		logger.Prepare(log).
+			Append(zap.Any("error", fmt.Sprintf("update user error: %s", err))).
+			Level(zap.ErrorLevel).
+			Development().
+			Commit("env")
+		tx.Rollback()
+		return err
+	}
+
+	tx.Commit()
 
 	return nil
 }
