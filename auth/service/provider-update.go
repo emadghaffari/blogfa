@@ -29,5 +29,6 @@ func (a *Auth) UpdateProvider(ctx context.Context, req *pb.UpdateProviderRequest
 		}, status.Errorf(codes.Internal, "user not verified")
 	}
 
+	// response
 	return &pb.Response{}, nil
 }
