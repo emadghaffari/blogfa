@@ -14,6 +14,8 @@ var (
 // ProviderInterface interface
 type ProviderInterface interface {
 	Register(ctx context.Context, user Provider) error
+	Update(ctx context.Context, prov Provider) error
+	Get(ctx context.Context, table string, query interface{}, args ...interface{}) (Provider, error)
 }
 
 // Provider struct
