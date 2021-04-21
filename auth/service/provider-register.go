@@ -59,5 +59,6 @@ func (a *Auth) RegisterProvider(ctx context.Context, req *pb.ProviderRegisterReq
 	child.SetTag("register", "after register provider")
 	defer child.Finish()
 
+	// return successfully message
 	return &pb.Response{Message: "provider created successfully", Status: &pb.Status{Code: http.StatusOK, Message: "SUCCESS"}}, nil
 }
