@@ -116,7 +116,7 @@ func (u User) Search(ctx context.Context, from, to int, search string) ([]User, 
 		Or("role_id LIKE ?", "%"+search+"%").
 		Limit(to - from).
 		Offset(from).
-		Select("username, name, last_name, phone, email, gender, role_id, birth_date").
+		Select("*").
 		Find(&users).Error
 	if err != nil {
 		log := logger.GetZapLogger(false)
@@ -128,7 +128,7 @@ func (u User) Search(ctx context.Context, from, to int, search string) ([]User, 
 		tx.Rollback()
 		return nil, err
 	}
-	// tx.Commit()
+	tx.Commit()
 
 	return users, nil
 }
