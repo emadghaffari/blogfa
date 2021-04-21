@@ -91,3 +91,43 @@ func (p *Provider) Update(ctx context.Context, prov Provider) error {
 
 	return nil
 }
+
+
+
+// Search method for search providers
+func (p Provider) Search(ctx context.Context, from, to int, search string) ([]Provider, error) {
+	span, _ := jtrace.Tracer.SpanFromContext(ctx, "search provider model")
+	defer span.Finish()
+	span.SetTag("model", fmt.Sprintf("search providers"))
+
+	tx := mysql.Storage.GetDatabase().Begin()
+
+	var providers []Provider
+	err := tx.
+		Preload("User").
+		Table("providers").
+		Where("fixed_number LIKE ?", "%"+search+"%").
+		Or("company LIKE ?", "%"+search+"%").
+		Or("card LIKE ?", "%"+search+"%").
+		Or("card_number LIKE ?", "%"+search+"%").
+		Or("sheba_number LIKE ?", "%"+search+"%").
+		Or("address LIKE ?", "%"+search+"%").
+		Or("user_id LIKE ?", "%"+search+"%").
+		Limit(to - from).
+		Offset(from).
+		Select("*").
+		Find(&providers).Error
+	if err != nil {
+		log := logger.GetZapLogger(false)
+		logger.Prepare(log).
+			Append(zap.Any("error", fmt.Sprintf("update providers error: %s", err))).
+			Level(zap.ErrorLevel).
+			Development().
+			Commit("env")
+		tx.Rollback()
+		return nil, err
+	}
+	tx.Commit()
+
+	return providers, nil
+}
