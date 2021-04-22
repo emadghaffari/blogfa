@@ -92,8 +92,6 @@ func (p *Provider) Update(ctx context.Context, prov Provider) error {
 	return nil
 }
 
-
-
 // Search method for search providers
 func (p Provider) Search(ctx context.Context, from, to int, search string) ([]Provider, error) {
 	span, _ := jtrace.Tracer.SpanFromContext(ctx, "search provider model")
@@ -102,6 +100,7 @@ func (p Provider) Search(ctx context.Context, from, to int, search string) ([]Pr
 
 	tx := mysql.Storage.GetDatabase().Begin()
 
+	// provider list
 	var providers []Provider
 	err := tx.
 		Preload("User").
