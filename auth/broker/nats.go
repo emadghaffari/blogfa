@@ -47,7 +47,7 @@ func (n *nts) Connect() error {
 
 		n.conn, err = opts.Connect()
 		if err != nil {
-			logger := zapLogger.GetZapLogger(false)
+			logger := zapLogger.GetZapLogger(config.Global.Debug())
 			zapLogger.Prepare(logger).
 				Development().
 				Level(zap.ErrorLevel).
@@ -63,7 +63,7 @@ func (n *nts) Connect() error {
 // EncodeConn Encode connection to json format
 func (n *nts) EncodedConn() error {
 	if n.conn == nil {
-		logger := zapLogger.GetZapLogger(false)
+		logger := zapLogger.GetZapLogger(config.Global.Debug())
 		zapLogger.Prepare(logger).
 			Development().
 			Level(zap.ErrorLevel).
@@ -92,7 +92,7 @@ func (n *nts) ECConn() *nats.EncodedConn {
 // Publish new message
 func (n *nts) Publish(ctx context.Context, subject string, value interface{}) error {
 	if err := n.ec.Publish(subject, &value); err != nil {
-		logger := zapLogger.GetZapLogger(false)
+		logger := zapLogger.GetZapLogger(config.Global.Debug())
 		zapLogger.Prepare(logger).
 			Development().
 			Level(zap.ErrorLevel).
