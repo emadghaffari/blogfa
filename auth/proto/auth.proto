@@ -14,7 +14,6 @@ service Auth {
     rpc PLogin (PLoginRequest) returns (PLoginResponse);
     rpc CreateProvider (CreateProviderRequest) returns (Response);
     rpc UpdateProvider (UpdateProviderRequest) returns (Response);
-    rpc AssignProviderToUser (AssignProviderToUserRequest) returns (Response);
     rpc SearchUser (SearchRequest) returns (stream User);
     rpc SearchProvider (SearchRequest) returns (stream Provider);
     rpc UpdateUser (UpdateUserRequest) returns (Response);
@@ -131,14 +130,6 @@ message UpdateProviderRequest {
     string address = 7;
     string userID = 8;
     string token = 9;
-}
-
-
-message AssignProviderToUserRequest {
-    string nuserID = 1;
-    string ouserID = 2;
-    string providerID = 3;
-    string token = 4;
 }
 
 
