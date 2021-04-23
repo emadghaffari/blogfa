@@ -72,3 +72,17 @@ func (c *consul) Connect(config config.GlobalConfig) error {
 func (c *consul) GetClient() *api.Client {
 	return c.client
 }
+
+func (c *consul) CreateSesstion(a api.SessionEntry) (string, *api.WriteMeta, error) {
+	sessionID, meta, err := c.client.Session().Create(&a, nil)
+	if err != nil {
+		logger := zapLogger.GetZapLogger(config.Global.Debug())
+		zapLogger.Prepare(logger).
+			Development().
+			Level(zap.ErrorLevel).
+			Commit(err.Error())
+		return "", nil, err
+	}
+
+	return sessionID, meta, err
+}
