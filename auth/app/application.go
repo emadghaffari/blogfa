@@ -90,7 +90,7 @@ func StartApplication() {
 func initLogger() {
 	defer fmt.Printf("zap logger is available \n")
 	zapLogger.SetLogPath("logs")
-	logger = zapLogger.GetZapLogger(false)
+	logger = zapLogger.GetZapLogger(config.Global.Debug())
 }
 
 // init configs
