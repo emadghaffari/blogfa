@@ -16,4 +16,5 @@ type GlobalConfig struct {
 	MYSQL       database      `yaml:"database"`
 	Nats        nats          `yaml:"nats"`
 	JWT         JWT           `yaml:"jwt"`
+	Consul      consul        `yaml:"consul"`
 }
