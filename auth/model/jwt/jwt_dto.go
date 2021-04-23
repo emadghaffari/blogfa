@@ -17,7 +17,7 @@ import (
 
 // Generate new jwt token and store into redis DB
 func (j *jwt) Generate(ctx context.Context, model interface{}) (*jwt, error) {
-	logger = zapLogger.GetZapLogger(false)
+	logger = zapLogger.GetZapLogger(config.Global.Debug())
 
 	td, err := j.GenerateJWT()
 	if err != nil {
