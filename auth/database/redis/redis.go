@@ -38,7 +38,7 @@ func (r *rds) Connect(confs config.GlobalConfig) error {
 	var err error
 
 	once.Do(func() {
-		logger = zapLogger.GetZapLogger(false)
+		logger = zapLogger.GetZapLogger(confs.Debug())
 
 		r.db = redis.NewClient(&redis.Options{
 			DB:       confs.Redis.DB,

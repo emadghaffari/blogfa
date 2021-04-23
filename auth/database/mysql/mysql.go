@@ -34,7 +34,7 @@ type msql struct {
 
 // Connect method job is connect to mysql database and check migration
 func (m *msql) Connect(config config.GlobalConfig) error {
-	logger := zapLogger.GetZapLogger(false)
+	logger := zapLogger.GetZapLogger(config.Debug())
 	var err error
 	once.Do(func() {
 		if config.MYSQL.Namespace != "" {
