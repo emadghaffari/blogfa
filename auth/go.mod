@@ -10,6 +10,7 @@ require (
 	github.com/golang/protobuf v1.5.1
 	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2 // indirect
 	github.com/grpc-ecosystem/grpc-opentracing v0.0.0-20180507213350-8e809c8a8645
+	github.com/hashicorp/consul/api v1.8.1
 	github.com/nats-io/nats.go v1.10.0
 	github.com/oklog/oklog v0.3.2
 	github.com/oklog/run v1.1.0 // indirect
