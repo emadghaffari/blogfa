@@ -3,6 +3,7 @@ package app
 import (
 	"blogfa/auth/broker"
 	"blogfa/auth/config"
+	"blogfa/auth/database/consul"
 	"blogfa/auth/database/etcd"
 	"blogfa/auth/database/mysql"
 	"blogfa/auth/database/redis"
@@ -67,6 +68,10 @@ func StartApplication() {
 	}
 
 	if err := initRedis(); err != nil {
+		return
+	}
+
+	if err := initConsul(); err != nil {
 		return
 	}
 
@@ -236,6 +241,18 @@ func initMessageBroker() error {
 func initRedis() error {
 	fmt.Printf("redis database loaded successfully \n")
 	if err := redis.Storage.Connect(config.Global); err != nil {
+		fmt.Println(err)
+		return err
+	}
+
+	return nil
+
+}
+
+// init Consul
+func initConsul() error {
+	fmt.Printf("Consul loaded successfully \n")
+	if err := consul.Storage.Connect(config.Global); err != nil {
 		fmt.Println(err)
 		return err
 	}
