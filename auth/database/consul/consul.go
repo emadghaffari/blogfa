@@ -44,6 +44,7 @@ func (c *consul) Connect(config config.GlobalConfig) error {
 			return
 		}
 
+		// register service
 		if err := c.client.Agent().ServiceRegister(&api.AgentServiceRegistration{
 			Address: config.Consul.Address,
 			ID:      "token.Generate(10)", // Unique for each node
