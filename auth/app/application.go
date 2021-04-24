@@ -16,11 +16,11 @@ import (
 	"io"
 	"log"
 	"net"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/gin-gonic/gin"
 	group "github.com/oklog/oklog/pkg/group"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/viper"
@@ -141,15 +141,23 @@ func initGRPCHandler(g *group.Group) {
 func initMetricsEndpoint(g *group.Group) {
 	defer fmt.Printf("metrics started port:%s \n", config.Global.Service.HTTP.Port)
 
-	http.DefaultServeMux.Handle("/metrics", promhttp.Handler())
-	debugListener, err := net.Listen("tcp", config.Global.Service.HTTP.Port)
-	if err != nil {
-		zapLogger.Prepare(logger).Development().Level(zap.InfoLevel).Add("msg", "transport debug/HTTP during Listen err").Commit(err.Error())
-	}
+	router := gin.Default()
+
+	router.GET("/metrics", func(c *gin.Context) {
+		promhttp.Handler().ServeHTTP(c.Writer, c.Request)
+	})
+
+	// http.DefaultServeMux.Handle("/metrics", promhttp.Handler())
+	// debugListener, err := net.Listen("tcp", config.Global.Service.HTTP.Port)
+	// if err != nil {
+	// 	zapLogger.Prepare(logger).Development().Level(zap.InfoLevel).Add("msg", "transport debug/HTTP during Listen err").Commit(err.Error())
+	// }
 	g.Add(func() error {
-		return http.Serve(debugListener, http.DefaultServeMux)
+		// return http.Serve(debugListener, http.DefaultServeMux)
+		router.Run(config.Global.Service.HTTP.Port)
+		return nil
 	}, func(error) {
-		debugListener.Close()
+		// debugListener.Close()
 	})
 }
 
