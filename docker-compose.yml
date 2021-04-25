@@ -10,6 +10,8 @@ services:
       - backend
     depends_on:
       - jaeger
+    ports:
+      - "8081:8081"
 
   # jaeger tracer
   jaeger:
