@@ -1,4 +1,4 @@
-package service
+package grpc
 
 import (
 	"blogfa/auth/model/jwt"
@@ -45,16 +45,16 @@ func (a *Auth) SearchProvider(req *pb.SearchRequest, stream pb.Auth_SearchProvid
 	for _, provider := range providers {
 		err := stream.Send(&pb.Provider{
 			FixedNumber: provider.FixedNumber,
-			Company: provider.Company,
-			Card: provider.Card,
-			CardNumber: provider.CardNumber,
+			Company:     provider.Company,
+			Card:        provider.Card,
+			CardNumber:  provider.CardNumber,
 			ShebaNumber: provider.ShebaNumber,
-			Address: provider.Address,
+			Address:     provider.Address,
 			User: &pb.User{
 				Username: provider.User.Username,
-				Name: provider.User.Name,
+				Name:     provider.User.Name,
 				LastName: provider.User.LastName,
-				Gender: pb.User_Gender(pb.User_Gender_value[provider.User.Gender]),
+				Gender:   pb.User_Gender(pb.User_Gender_value[provider.User.Gender]),
 			},
 		})
 		if err != nil {
