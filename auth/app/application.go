@@ -138,12 +138,16 @@ func initGRPCHandler(g *group.Group) {
 }
 
 // init HTTP Endpoint
+// add rest endpoints
 func initHTTPEndpoint(g *group.Group) {
 	defer fmt.Printf("metrics started port:%s \n", config.Global.Service.HTTP.Port)
 
 	router := gin.Default()
 
+	// metrics
 	router.GET("/metrics", http.Metrics)
+
+	// health check
 	router.GET("/health", http.Health)
 
 	g.Add(func() error {
