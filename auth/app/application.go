@@ -10,7 +10,8 @@ import (
 	"blogfa/auth/pkg/jtrace"
 	zapLogger "blogfa/auth/pkg/logger"
 	pb "blogfa/auth/proto"
-	"blogfa/auth/service"
+	service "blogfa/auth/service/grpc"
+	"blogfa/auth/service/http"
 	"context"
 	"fmt"
 	"io"
@@ -22,7 +23,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	group "github.com/oklog/oklog/pkg/group"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/spf13/viper"
 	"go.etcd.io/etcd/api/v3/mvccpb"
 	clientv3 "go.etcd.io/etcd/client/v3"
@@ -82,7 +82,7 @@ func StartApplication() {
 	defer broker.Nats.ECConn().Close()
 
 	g := createService()
-	initMetricsEndpoint(g)
+	initHTTPEndpoint(g)
 	initCancelInterrupt(g)
 
 	fmt.Printf("--------------------------------\n\n")
@@ -137,28 +137,22 @@ func initGRPCHandler(g *group.Group) {
 	})
 }
 
-// init metrics
-func initMetricsEndpoint(g *group.Group) {
+// init HTTP Endpoint
+func initHTTPEndpoint(g *group.Group) {
 	defer fmt.Printf("metrics started port:%s \n", config.Global.Service.HTTP.Port)
 
 	router := gin.Default()
 
-	router.GET("/metrics", func(c *gin.Context) {
-		promhttp.Handler().ServeHTTP(c.Writer, c.Request)
-	})
+	router.GET("/metrics", http.Metrics)
+	router.GET("/health", http.Health)
 
-	// http.DefaultServeMux.Handle("/metrics", promhttp.Handler())
-	// debugListener, err := net.Listen("tcp", config.Global.Service.HTTP.Port)
-	// if err != nil {
-	// 	zapLogger.Prepare(logger).Development().Level(zap.InfoLevel).Add("msg", "transport debug/HTTP during Listen err").Commit(err.Error())
-	// }
 	g.Add(func() error {
-		// return http.Serve(debugListener, http.DefaultServeMux)
-		router.Run(config.Global.Service.HTTP.Port)
+		if err := router.Run(config.Global.Service.HTTP.Port); err != nil {
+			zapLogger.Prepare(logger).Development().Level(zap.InfoLevel).Add("msg", "transport debug/HTTP during Listen err").Commit(err.Error())
+			return err
+		}
 		return nil
-	}, func(error) {
-		// debugListener.Close()
-	})
+	}, func(error) {})
 }
 
 // init cancle Interrupt
