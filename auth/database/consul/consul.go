@@ -3,6 +3,7 @@ package consul
 import (
 	"blogfa/auth/config"
 	zapLogger "blogfa/auth/pkg/logger"
+	"blogfa/auth/pkg/token"
 	"sync"
 
 	"github.com/hashicorp/consul/api"
@@ -47,8 +48,8 @@ func (c *consul) Connect(config config.GlobalConfig) error {
 		// register service
 		if err := c.client.Agent().ServiceRegister(&api.AgentServiceRegistration{
 			Address: config.Consul.Address,
-			ID:      "token.Generate(10)", // Unique for each node
-			Name:    config.Service.Name,  // Can be service type
+			ID:      token.Generate(10),  // Unique for each node
+			Name:    config.Service.Name, // Can be service type
 			Tags:    config.Consul.Tags,
 			Check: &api.AgentServiceCheck{
 				HTTP:     config.Consul.CheckHttp,
