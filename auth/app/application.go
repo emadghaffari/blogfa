@@ -78,13 +78,9 @@ func StartApplication() {
 	if err := initMessageBroker(); err != nil {
 		return
 	}
-	defer broker.Nats.Conn().Close()
 	defer broker.Nats.ECConn().Close()
 
 	g := createService()
-	initHTTPEndpoint(g)
-	initCancelInterrupt(g)
-
 	fmt.Printf("--------------------------------\n\n")
 	if err := g.Run(); err != nil {
 		zapLogger.Prepare(logger).Development().Level(zap.ErrorLevel).Commit("server stopped")
