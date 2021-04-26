@@ -235,6 +235,7 @@ func initMessageBroker() error {
 		return err
 	}
 
+	// encode the nats connection
 	if err := broker.Nats.EncodedConn(); err != nil {
 		return err
 	}
