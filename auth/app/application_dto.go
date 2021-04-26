@@ -13,6 +13,12 @@ func createService() (g *group.Group) {
 
 	// init GRPC Handlers
 	initGRPCHandler(g)
+
+	// init http endpoints
+	initHTTPEndpoint(g)
+
+	// init cancel
+	initCancelInterrupt(g)
 	return g
 }
 
