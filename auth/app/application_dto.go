@@ -22,6 +22,8 @@ func createService() (g *group.Group) {
 	return g
 }
 
+// defaultGRPCOptions
+// add options for grpc connection
 func defaultGRPCOptions(logger *zap.Logger, tracer opentracing.Tracer) []grpc.ServerOption {
 	options := []grpc.ServerOption{}
 
