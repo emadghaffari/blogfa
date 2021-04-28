@@ -4,7 +4,6 @@ import (
 	"blogfa/auth/config"
 	zapLogger "blogfa/auth/pkg/logger"
 	"context"
-	"fmt"
 	"strings"
 	"sync"
 	"time"
@@ -20,15 +19,12 @@ var (
 
 type NatsBroker interface {
 	Connect() error
-	Conn() *nats.Conn
-	EncodedConn() error
-	ECConn() *nats.EncodedConn
+	Conn() *nats.EncodedConn
 	Publish(ctx context.Context, subject string, value interface{}) error
 }
 
 type nts struct {
-	conn *nats.Conn
-	ec   *nats.EncodedConn
+	conn *nats.EncodedConn
 }
 
 // Connect nats broker
@@ -45,7 +41,7 @@ func (n *nts) Connect() error {
 			PingInterval: time.Minute * 10,
 		}
 
-		n.conn, err = opts.Connect()
+		conn, err := opts.Connect()
 		if err != nil {
 			logger := zapLogger.GetZapLogger(config.Global.Debug())
 			zapLogger.Prepare(logger).
@@ -55,43 +51,24 @@ func (n *nts) Connect() error {
 			return
 		}
 
+		n.conn, err = nats.NewEncodedConn(conn, nats.JSON_ENCODER)
+		if err != nil {
+			return
+		}
+
 	})
 
 	return err
 }
 
-// EncodeConn Encode connection to json format
-func (n *nts) EncodedConn() error {
-	if n.conn == nil {
-		logger := zapLogger.GetZapLogger(config.Global.Debug())
-		zapLogger.Prepare(logger).
-			Development().
-			Level(zap.ErrorLevel).
-			Commit("ERROR")
-		return fmt.Errorf("nats not connected, connect first")
-	}
-
-	var err error
-	n.ec, err = nats.NewEncodedConn(n.conn, nats.JSON_ENCODER)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 // Conn get Connection
-func (n *nts) Conn() *nats.Conn {
+func (n *nts) Conn() *nats.EncodedConn {
 	return n.conn
-}
-
-// ECConn get EncodedConnection
-func (n *nts) ECConn() *nats.EncodedConn {
-	return n.ec
 }
 
 // Publish new message
 func (n *nts) Publish(ctx context.Context, subject string, value interface{}) error {
-	if err := n.ec.Publish(subject, &value); err != nil {
+	if err := n.conn.Publish(subject, &value); err != nil {
 		logger := zapLogger.GetZapLogger(config.Global.Debug())
 		zapLogger.Prepare(logger).
 			Development().

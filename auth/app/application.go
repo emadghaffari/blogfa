@@ -78,7 +78,7 @@ func StartApplication() {
 	if err := initMessageBroker(); err != nil {
 		return
 	}
-	defer broker.Nats.ECConn().Close()
+	defer broker.Nats.Conn().Close()
 
 	g := createService()
 	fmt.Printf("--------------------------------\n\n")
@@ -228,11 +228,6 @@ func initDatabase() error {
 func initMessageBroker() error {
 	fmt.Printf("nats message broker loaded successfully \n")
 	if err := broker.Nats.Connect(); err != nil {
-		return err
-	}
-
-	// encode the nats connection
-	if err := broker.Nats.EncodedConn(); err != nil {
 		return err
 	}
 
