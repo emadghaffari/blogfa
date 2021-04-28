@@ -65,3 +65,11 @@ Nats:
 jwt:
   secret: "xxxxxxxxxxxxx"
   rSecret: "yyyyyyyyyyyyyyy"
+
+consul:
+  Address: "consul-server:8500"
+  Scheme: "http"
+  Tags:
+    - monitoring
+  CheckHttp: "http://auth:8081/health"
+  CheckInterval: "100s"
