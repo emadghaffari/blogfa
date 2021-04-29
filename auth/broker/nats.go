@@ -31,6 +31,7 @@ type nts struct {
 func (n *nts) Connect() error {
 	var err error
 	oncen.Do(func() {
+		var conn *nats.Conn
 		opts := nats.Options{
 			Name:         config.Global.Service.Name,
 			Secure:       config.Global.Nats.Auth,
@@ -41,7 +42,7 @@ func (n *nts) Connect() error {
 			PingInterval: time.Minute * 10,
 		}
 
-		conn, err := opts.Connect()
+		conn, err = opts.Connect()
 		if err != nil {
 			logger := zapLogger.GetZapLogger(config.Global.Debug())
 			zapLogger.Prepare(logger).
