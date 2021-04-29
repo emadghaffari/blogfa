@@ -80,6 +80,7 @@ func StartApplication() {
 	}
 	defer broker.Nats.Conn().Close()
 
+	// create service
 	g := createService()
 	fmt.Printf("--------------------------------\n\n")
 	if err := g.Run(); err != nil {
