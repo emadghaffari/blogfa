@@ -1,9 +1,9 @@
 package grpc
 
 import (
-	"blogfa/auth/model/jwt"
-	"blogfa/auth/model/permission"
-	"blogfa/auth/model/user"
+	"blogfa/auth/domain/jwt"
+	"blogfa/auth/domain/permission"
+	"blogfa/auth/domain/user"
 	"blogfa/auth/pkg/cript"
 	"blogfa/auth/pkg/jtrace"
 	pb "blogfa/auth/proto"

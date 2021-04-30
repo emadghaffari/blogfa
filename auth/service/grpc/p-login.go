@@ -3,8 +3,8 @@ package grpc
 import (
 	"blogfa/auth/broker"
 	"blogfa/auth/config"
-	"blogfa/auth/model/jwt"
-	"blogfa/auth/model/user"
+	"blogfa/auth/domain/jwt"
+	"blogfa/auth/domain/user"
 	"blogfa/auth/pkg/jtrace"
 	"blogfa/auth/pkg/token"
 	pb "blogfa/auth/proto"

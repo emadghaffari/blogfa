@@ -1,8 +1,9 @@
 package grpc
 
 import (
-	"blogfa/auth/model/provider"
-	"blogfa/auth/model/user"
+	"blogfa/auth/domain/provider"
+	"blogfa/auth/domain/user"
+	"blogfa/auth/model"
 	"blogfa/auth/pkg/cript"
 	"blogfa/auth/pkg/jtrace"
 	pb "blogfa/auth/proto"
@@ -27,7 +28,7 @@ func (a *Auth) RegisterProvider(ctx context.Context, req *pb.ProviderRegisterReq
 	}
 
 	// create new user requested.
-	user, err := user.Model.Register(jtrace.Tracer.ContextWithSpan(ctx, span), user.User{
+	user, err := user.Model.Register(jtrace.Tracer.ContextWithSpan(ctx, span), model.User{
 		Username:  req.GetUsername(),
 		Password:  &password,
 		Name:      req.GetName(),
@@ -43,7 +44,7 @@ func (a *Auth) RegisterProvider(ctx context.Context, req *pb.ProviderRegisterReq
 	}
 
 	// create provider
-	if err := provider.Model.Register(jtrace.Tracer.ContextWithSpan(ctx, span), provider.Provider{
+	if err := provider.Model.Register(jtrace.Tracer.ContextWithSpan(ctx, span), model.Provider{
 		UserID:      user.ID,
 		FixedNumber: req.GetFixedNumber(),
 		Company:     req.GetCompany(),

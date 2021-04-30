@@ -1,9 +1,9 @@
 package grpc
 
 import (
-	"blogfa/auth/model/jwt"
-	"blogfa/auth/model/permission"
-	"blogfa/auth/model/user"
+	"blogfa/auth/domain/jwt"
+	"blogfa/auth/domain/permission"
+	"blogfa/auth/domain/user"
 	"blogfa/auth/pkg/jtrace"
 	pb "blogfa/auth/proto"
 	"context"
@@ -44,6 +44,10 @@ func (a *Auth) SearchUser(req *pb.SearchRequest, stream pb.Auth_SearchUserServer
 	}
 
 	for _, user := range users {
+		fmt.Println("-------------------------")
+		fmt.Println(user.ID)
+		fmt.Println("-------------------------")
+
 		err := stream.Send(&pb.User{
 			Username:  user.Username,
 			Gender:    pb.User_Gender(pb.User_Gender_value[user.Gender]),
@@ -56,11 +60,14 @@ func (a *Auth) SearchUser(req *pb.SearchRequest, stream pb.Auth_SearchUserServer
 				Name:        user.Role.Name,
 				Permissions: permission.ToList(user.Role.Permissions),
 			},
+			// Providers: provider.Model.ToProto(user.Provider),
 		})
 		if err != nil {
 			return status.Errorf(codes.Internal, fmt.Sprintf("internal error for get user"))
 		}
 	}
+
+	fmt.Println(err)
 
 	return nil
 }

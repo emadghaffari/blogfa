@@ -1,8 +1,9 @@
 package grpc
 
 import (
-	"blogfa/auth/model/jwt"
-	"blogfa/auth/model/provider"
+	"blogfa/auth/domain/jwt"
+	"blogfa/auth/domain/provider"
+	"blogfa/auth/model"
 	"blogfa/auth/pkg/jtrace"
 	pb "blogfa/auth/proto"
 	"context"
@@ -47,7 +48,7 @@ func (a *Auth) UpdateProvider(ctx context.Context, req *pb.UpdateProviderRequest
 	// try to update provider
 	if err := provider.Model.Update(
 		jtrace.Tracer.ContextWithSpan(ctx, span),
-		provider.Provider{
+		model.Provider{
 			Model:       gorm.Model{ID: uint(ID)},
 			FixedNumber: req.GetFixedNumber(),
 			Company:     req.GetCompany(),

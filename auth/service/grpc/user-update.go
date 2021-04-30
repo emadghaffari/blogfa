@@ -1,8 +1,9 @@
 package grpc
 
 import (
-	"blogfa/auth/model/jwt"
-	"blogfa/auth/model/user"
+	"blogfa/auth/domain/jwt"
+	"blogfa/auth/domain/user"
+	"blogfa/auth/model"
 	"blogfa/auth/pkg/jtrace"
 	pb "blogfa/auth/proto"
 	"context"
@@ -31,7 +32,7 @@ func (a *Auth) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.R
 	}
 
 	// update spesific user with userID
-	if err := user.Model.Update(jtrace.Tracer.ContextWithSpan(ctx, span), user.User{
+	if err := user.Model.Update(jtrace.Tracer.ContextWithSpan(ctx, span), model.User{
 		Username:  req.GetID(),
 		Name:      req.GetName(),
 		LastName:  req.GetLastName(),

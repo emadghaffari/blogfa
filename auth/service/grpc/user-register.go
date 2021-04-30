@@ -1,7 +1,8 @@
 package grpc
 
 import (
-	"blogfa/auth/model/user"
+	"blogfa/auth/domain/user"
+	"blogfa/auth/model"
 	"blogfa/auth/pkg/cript"
 	"blogfa/auth/pkg/jtrace"
 	pb "blogfa/auth/proto"
@@ -25,7 +26,7 @@ func (a *Auth) RegisterUser(ctx context.Context, req *pb.UserRegisterRequest) (*
 	}
 
 	// create new user requested.
-	_, err = user.Model.Register(jtrace.Tracer.ContextWithSpan(ctx, span), user.User{
+	_, err = user.Model.Register(jtrace.Tracer.ContextWithSpan(ctx, span), model.User{
 		Username:  req.GetUsername(),
 		Password:  &password,
 		Name:      req.GetName(),
