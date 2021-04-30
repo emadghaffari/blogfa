@@ -128,8 +128,7 @@ message UpdateProviderRequest {
     string cardNumber = 5;
     string shebaNumber = 6;
     string address = 7;
-    string userID = 8;
-    string token = 9;
+    string token = 8;
 }
 
 
