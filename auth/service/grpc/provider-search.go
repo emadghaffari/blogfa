@@ -44,6 +44,7 @@ func (a *Auth) SearchProvider(req *pb.SearchRequest, stream pb.Auth_SearchProvid
 
 	for _, provider := range providers {
 		stream.Send(&pb.Provider{
+			ID:          strconv.Itoa(int(provider.ID)),
 			FixedNumber: provider.FixedNumber,
 			Company:     provider.Company,
 			Card:        provider.Card,
