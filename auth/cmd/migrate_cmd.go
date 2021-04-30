@@ -3,10 +3,7 @@ package cmd
 import (
 	"blogfa/auth/config"
 	"blogfa/auth/database/mysql"
-	"blogfa/auth/model/permission"
-	"blogfa/auth/model/provider"
-	"blogfa/auth/model/role"
-	"blogfa/auth/model/user"
+	"blogfa/auth/model"
 	"fmt"
 	"os"
 
@@ -41,10 +38,10 @@ func migrate(cmd *cobra.Command, args []string) {
 	}
 
 	err = mysql.Storage.GetDatabase().AutoMigrate(
-		user.User{},
-		role.Role{},
-		permission.Permission{},
-		provider.Provider{},
+		model.User{},
+		model.Role{},
+		model.Permission{},
+		model.Provider{},
 	)
 	if err != nil {
 		fmt.Println(err)
