@@ -104,6 +104,7 @@ func (p Provider) Search(ctx context.Context, from, to int, search string) ([]Pr
 	var providers []Provider
 	err := tx.
 		Preload("User").
+		Joins("User").
 		Table("providers").
 		Where("fixed_number LIKE ?", "%"+search+"%").
 		Or("company LIKE ?", "%"+search+"%").
@@ -112,6 +113,7 @@ func (p Provider) Search(ctx context.Context, from, to int, search string) ([]Pr
 		Or("sheba_number LIKE ?", "%"+search+"%").
 		Or("address LIKE ?", "%"+search+"%").
 		Or("user_id LIKE ?", "%"+search+"%").
+		Or("User.username LIKE ?", "%"+search+"%").
 		Limit(to - from).
 		Offset(from).
 		Select("*").
