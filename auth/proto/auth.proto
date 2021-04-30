@@ -78,6 +78,16 @@ message User {
         FMALE = 1;
         NONE = 2;
     }
+    repeated Providers Providers = 9; 
+}
+
+message Providers {
+    string fixedNumber = 1;
+    string company = 2;
+    string card = 3; // bank name
+    string cardNumber = 4;
+    string shebaNumber = 5;
+    string address = 6;
 }
 
 message Role {
