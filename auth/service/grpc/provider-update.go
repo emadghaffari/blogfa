@@ -33,18 +33,6 @@ func (a *Auth) UpdateProvider(ctx context.Context, req *pb.UpdateProviderRequest
 	}
 
 	// convert string to int for userID
-	userID, err := strconv.Atoi(req.GetUserID())
-	if err != nil {
-		return &pb.Response{
-			Message: fmt.Sprintf("invalid userID: %s", err.Error()),
-			Status: &pb.Status{
-				Code:    http.StatusUnauthorized,
-				Message: "FAILED",
-			},
-		}, status.Errorf(codes.Internal, "invalid userID")
-	}
-
-	// convert string to int for userID
 	ID, err := strconv.Atoi(req.GetID())
 	if err != nil {
 		return &pb.Response{
@@ -61,7 +49,6 @@ func (a *Auth) UpdateProvider(ctx context.Context, req *pb.UpdateProviderRequest
 		jtrace.Tracer.ContextWithSpan(ctx, span),
 		provider.Provider{
 			Model:       gorm.Model{ID: uint(ID)},
-			UserID:      uint(userID),
 			FixedNumber: req.GetFixedNumber(),
 			Company:     req.GetCompany(),
 			CardNumber:  req.GetCardNumber(),
