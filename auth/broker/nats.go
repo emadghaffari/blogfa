@@ -42,6 +42,7 @@ func (n *nts) Connect() error {
 			PingInterval: time.Minute * 10,
 		}
 
+		// try to connect to nats message broker
 		conn, err = opts.Connect()
 		if err != nil {
 			logger := zapLogger.GetZapLogger(config.Global.Debug())
