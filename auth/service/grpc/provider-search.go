@@ -43,7 +43,7 @@ func (a *Auth) SearchProvider(req *pb.SearchRequest, stream pb.Auth_SearchProvid
 	}
 
 	for _, provider := range providers {
-		err := stream.Send(&pb.Provider{
+		stream.Send(&pb.Provider{
 			FixedNumber: provider.FixedNumber,
 			Company:     provider.Company,
 			Card:        provider.Card,
@@ -51,11 +51,15 @@ func (a *Auth) SearchProvider(req *pb.SearchRequest, stream pb.Auth_SearchProvid
 			ShebaNumber: provider.ShebaNumber,
 			Address:     provider.Address,
 			User: &pb.User{
-				Username: provider.User.Username,
-				Name:     provider.User.Name,
-				LastName: provider.User.LastName,
-				Gender:   pb.User_Gender(pb.User_Gender_value[provider.User.Gender]),
+				Username:  provider.User.Username,
+				Name:      provider.User.Name,
+				LastName:  provider.User.LastName,
+				Gender:    pb.User_Gender(pb.User_Gender_value[provider.User.Gender]),
+				Phone:     provider.User.Phone,
+				Email:     provider.User.Email,
+				BirthDate: provider.User.BirthDate,
 			},
+			Token: req.GetToken(),
 		})
 		if err != nil {
 			return status.Errorf(codes.Internal, fmt.Sprintf("internal error for get provider"))
