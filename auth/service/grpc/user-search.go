@@ -43,6 +43,9 @@ func (a *Auth) SearchUser(req *pb.SearchRequest, stream pb.Auth_SearchUserServer
 		return status.Errorf(codes.Internal, "internal error for search users")
 	}
 
+	// FIXME
+	// provider list need to change
+	// bug for list providers for user
 	for _, user := range users {
 		fmt.Println("-------------------------")
 		fmt.Println(user.ID)
