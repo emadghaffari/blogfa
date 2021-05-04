@@ -16,7 +16,7 @@ type ProviderInterface interface {
 	Update(ctx context.Context, prov model.Provider) error
 	Get(ctx context.Context, table string, query interface{}, args ...interface{}) (model.Provider, error)
 	Search(ctx context.Context, from, to int, search string) ([]model.Provider, error)
-	ToProto(prvs []*model.Provider) (resp []*pb.Providers)
+	ToProto(prvs []model.Provider) (resp []*pb.Providers)
 }
 
 // Provider struct

@@ -133,7 +133,7 @@ func (p Provider) Search(ctx context.Context, from, to int, search string) ([]mo
 	return providers, nil
 }
 
-func (p Provider) ToProto(prvs []*model.Provider) []*pb.Providers {
+func (p Provider) ToProto(prvs []model.Provider) []*pb.Providers {
 	resp := make([]*pb.Providers, len(prvs))
 
 	for i, p := range prvs {
