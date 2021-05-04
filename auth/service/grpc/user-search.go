@@ -3,6 +3,7 @@ package grpc
 import (
 	"blogfa/auth/domain/jwt"
 	"blogfa/auth/domain/permission"
+	"blogfa/auth/domain/provider"
 	"blogfa/auth/domain/user"
 	"blogfa/auth/pkg/jtrace"
 	pb "blogfa/auth/proto"
@@ -63,7 +64,7 @@ func (a *Auth) SearchUser(req *pb.SearchRequest, stream pb.Auth_SearchUserServer
 				Name:        user.Role.Name,
 				Permissions: permission.ToList(user.Role.Permissions),
 			},
-			// Providers: provider.Model.ToProto(user.Provider),
+			Providers: provider.Model.ToProto(user.Provider),
 		})
 		if err != nil {
 			return status.Errorf(codes.Internal, fmt.Sprintf("internal error for get user"))
