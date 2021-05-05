@@ -23,6 +23,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	group "github.com/oklog/oklog/pkg/group"
+	opentracing "github.com/opentracing/opentracing-go"
 	"github.com/spf13/viper"
 	"go.etcd.io/etcd/api/v3/mvccpb"
 	clientv3 "go.etcd.io/etcd/client/v3"
@@ -31,57 +32,79 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-var logger *zap.Logger
+var (
+	logger *zap.Logger
+	Base   Application = &App{}
+)
+
+type Application interface {
+	StartApplication()
+	initLogger()
+	initConfigs() error
+	initGRPCHandler(g *group.Group)
+	initHTTPEndpoint(g *group.Group)
+	initCancelInterrupt(g *group.Group)
+	initJaeger() (io.Closer, error)
+	initConfigServer() error
+	initDatabase() error
+	initMessageBroker() error
+	initRedis() error
+	initConsul() error
+	createService() (g *group.Group)
+	defaultGRPCOptions(logger *zap.Logger, tracer opentracing.Tracer) []grpc.ServerOption
+}
+
+type App struct{}
 
 // StartApplication func
-func StartApplication() {
+func (a *App) StartApplication() {
 	fmt.Println("\n\n--------------------------------")
 
 	// if go code crashed we get error and line
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	// init zap logger
-	initLogger()
+	a.initLogger()
 
 	// init configs
-	if err := initConfigs(); err != nil {
+	if err := a.initConfigs(); err != nil {
 		return
 	}
 
 	//  Determine which tracer to use. We'll pass the tracer to all the
 	// components that use it, as a dependency
-	closer, err := initJaeger()
+	closer, err := a.initJaeger()
 	if err != nil {
 		return
 	}
 	defer closer.Close()
 
 	if viper.GetString("environment") == "production" {
-		if err := initConfigServer(); err != nil {
+		if err := a.initConfigServer(); err != nil {
 			fmt.Println(err.Error())
 		}
 		defer etcd.Storage.GetClient().Close()
 	}
 
-	if err := initDatabase(); err != nil {
+	if err := a.initDatabase(); err != nil {
 		return
 	}
 
-	if err := initRedis(); err != nil {
+	if err := a.initRedis(); err != nil {
 		return
 	}
 
-	if err := initConsul(); err != nil {
+	if err := a.initConsul(); err != nil {
 		return
 	}
 
-	if err := initMessageBroker(); err != nil {
+	if err := a.initMessageBroker(); err != nil {
 		return
 	}
 	defer broker.Nats.Conn().Close()
 
 	// create service
-	g := createService()
+	g := a.createService()
 	fmt.Printf("--------------------------------\n\n")
 	if err := g.Run(); err != nil {
 		zapLogger.Prepare(logger).Development().Level(zap.ErrorLevel).Commit("server stopped")
@@ -89,14 +112,14 @@ func StartApplication() {
 }
 
 // init zap logger
-func initLogger() {
+func (a *App) initLogger() {
 	defer fmt.Printf("zap logger is available \n")
 	zapLogger.SetLogPath("logs")
 	logger = zapLogger.GetZapLogger(config.Global.Debug())
 }
 
 // init configs
-func initConfigs() error {
+func (a *App) initConfigs() error {
 	defer fmt.Printf("configs loaded from file successfully \n")
 
 	// Current working directory
@@ -110,10 +133,10 @@ func initConfigs() error {
 }
 
 // init grpc connection
-func initGRPCHandler(g *group.Group) {
+func (a *App) initGRPCHandler(g *group.Group) {
 	defer fmt.Printf("grpc connected port:%s \n", config.Global.Service.GRPC.Port)
 
-	options := defaultGRPCOptions(logger, jtrace.Tracer.GetTracer())
+	options := a.defaultGRPCOptions(logger, jtrace.Tracer.GetTracer())
 	// Add your GRPC options here
 
 	lis, err := net.Listen("tcp", config.Global.Service.GRPC.Port)
@@ -136,7 +159,7 @@ func initGRPCHandler(g *group.Group) {
 
 // init HTTP Endpoint
 // add rest endpoints
-func initHTTPEndpoint(g *group.Group) {
+func (a *App) initHTTPEndpoint(g *group.Group) {
 	defer fmt.Printf("metrics started port:%s \n", config.Global.Service.HTTP.Port)
 
 	router := gin.Default()
@@ -157,7 +180,7 @@ func initHTTPEndpoint(g *group.Group) {
 }
 
 // init cancle Interrupt
-func initCancelInterrupt(g *group.Group) {
+func (a *App) initCancelInterrupt(g *group.Group) {
 	cancelInterrupt := make(chan struct{})
 	g.Add(func() error {
 		c := make(chan os.Signal, 1)
@@ -174,7 +197,7 @@ func initCancelInterrupt(g *group.Group) {
 }
 
 // init jaeger tracer
-func initJaeger() (io.Closer, error) {
+func (a *App) initJaeger() (io.Closer, error) {
 	defer fmt.Printf("Jaeger loaded successfully \n")
 	closer, err := jtrace.Tracer.Connect()
 	if err != nil {
@@ -187,7 +210,7 @@ func initJaeger() (io.Closer, error) {
 // in production you load envs from etcd storage
 // you can change, add or delete watch keys
 // watches example: key: redis - value: {"password":"****","address":"***:6985","db":"0",....}
-func initConfigServer() error {
+func (a *App) initConfigServer() error {
 	defer fmt.Printf("etcd storage loaded successfully \n")
 	if err := etcd.Storage.Connect(); err != nil {
 		return err
@@ -220,13 +243,13 @@ func initConfigServer() error {
 }
 
 // init mysql database
-func initDatabase() error {
+func (a *App) initDatabase() error {
 	fmt.Printf("mysql storage loaded successfully \n")
 	return mysql.Storage.Connect(config.Global)
 }
 
 // init message broker
-func initMessageBroker() error {
+func (a *App) initMessageBroker() error {
 	fmt.Printf("nats message broker loaded successfully \n")
 	if err := broker.Nats.Connect(); err != nil {
 		return err
@@ -237,7 +260,7 @@ func initMessageBroker() error {
 }
 
 // init Redis database
-func initRedis() error {
+func (a *App) initRedis() error {
 	fmt.Printf("redis database loaded successfully \n")
 	if err := redis.Storage.Connect(config.Global); err != nil {
 		fmt.Println(err)
@@ -249,7 +272,7 @@ func initRedis() error {
 }
 
 // init Consul
-func initConsul() error {
+func (a *App) initConsul() error {
 	fmt.Printf("Consul loaded successfully \n")
 	if err := consul.Storage.Connect(config.Global); err != nil {
 		fmt.Println(err)
