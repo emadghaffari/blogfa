@@ -71,7 +71,5 @@ func (a *Auth) SearchUser(req *pb.SearchRequest, stream pb.Auth_SearchUserServer
 		}
 	}
 
-	fmt.Println(err)
-
 	return nil
 }
