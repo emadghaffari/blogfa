@@ -13,7 +13,7 @@ var rootCmd = cobra.Command{
 	Use:  "auth",
 	Long: "A service that will validate restful transactions and send them to stripe.",
 	Run: func(cmd *cobra.Command, args []string) {
-		app.StartApplication()
+		app.Base.StartApplication()
 	},
 }
 
