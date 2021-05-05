@@ -8,23 +8,23 @@ import (
 	"google.golang.org/grpc"
 )
 
-func createService() (g *group.Group) {
+func (a *App) createService() (g *group.Group) {
 	g = &group.Group{}
 
 	// init GRPC Handlers
-	initGRPCHandler(g)
+	Base.initGRPCHandler(g)
 
 	// init http endpoints
-	initHTTPEndpoint(g)
+	Base.initHTTPEndpoint(g)
 
 	// init cancel
-	initCancelInterrupt(g)
+	Base.initCancelInterrupt(g)
 	return g
 }
 
 // defaultGRPCOptions
 // add options for grpc connection
-func defaultGRPCOptions(logger *zap.Logger, tracer opentracing.Tracer) []grpc.ServerOption {
+func (a *App) defaultGRPCOptions(logger *zap.Logger, tracer opentracing.Tracer) []grpc.ServerOption {
 	options := []grpc.ServerOption{}
 
 	// UnaryInterceptor and OpenTracingServerInterceptor for tracer
