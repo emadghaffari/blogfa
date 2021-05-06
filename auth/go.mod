@@ -10,7 +10,8 @@ require (
 	github.com/go-playground/validator/v10 v10.5.0 // indirect
 	github.com/go-redis/redis/v8 v8.8.0
 	github.com/golang/protobuf v1.5.2
-	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2 // indirect
+	github.com/grpc-ecosystem/go-grpc-middleware v1.2.2
+	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/grpc-ecosystem/grpc-opentracing v0.0.0-20180507213350-8e809c8a8645
 	github.com/hashicorp/consul/api v1.8.1
 	github.com/leodido/go-urn v1.2.1 // indirect
