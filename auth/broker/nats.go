@@ -17,12 +17,14 @@ var (
 	oncen sync.Once
 )
 
+// NatsBroker interface
 type NatsBroker interface {
 	Connect() error
 	Conn() *nats.EncodedConn
 	Publish(ctx context.Context, subject string, value interface{}) error
 }
 
+// nts struct for nats message broker
 type nts struct {
 	conn *nats.EncodedConn
 }
