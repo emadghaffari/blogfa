@@ -82,12 +82,13 @@ message User {
 }
 
 message Providers {
-    string fixedNumber = 1;
-    string company = 2;
-    string card = 3; // bank name
-    string cardNumber = 4;
-    string shebaNumber = 5;
-    string address = 6;
+    string ID = 1;
+    string fixedNumber = 2;
+    string company = 3;
+    string card = 4; // bank name
+    string cardNumber = 5;
+    string shebaNumber = 6;
+    string address = 7;
 }
 
 message Role {

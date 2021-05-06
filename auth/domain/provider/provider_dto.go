@@ -8,6 +8,7 @@ import (
 	pb "blogfa/auth/proto"
 	"context"
 	"fmt"
+	"strconv"
 
 	"go.uber.org/zap"
 )
@@ -138,6 +139,7 @@ func (p Provider) ToProto(prvs []model.Provider) []*pb.Providers {
 
 	for i, p := range prvs {
 		resp[i] = &pb.Providers{
+			ID:          strconv.Itoa(int(p.ID)),
 			FixedNumber: p.FixedNumber,
 			Company:     p.Company,
 			Card:        p.Card,
