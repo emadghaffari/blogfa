@@ -37,6 +37,7 @@ var (
 	Base   Application = &App{}
 )
 
+// Application interface for start application
 type Application interface {
 	StartApplication()
 	initLogger()
