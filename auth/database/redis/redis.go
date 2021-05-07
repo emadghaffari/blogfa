@@ -20,7 +20,7 @@ var (
 	once      sync.Once
 )
 
-// store interface is interface for store things into mysql
+// store interface is interface for store things into redis
 type store interface {
 	Connect(config config.GlobalConfig) error
 	Set(ctx context.Context, key string, value interface{}, duration time.Duration) error
@@ -28,7 +28,7 @@ type store interface {
 	Del(ctx context.Context, key ...string) error
 }
 
-// mysql struct
+// rds struct for redis client
 type rds struct {
 	db *redis.Client
 }
