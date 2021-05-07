@@ -7,8 +7,8 @@ import (
 var seedCMD = cobra.Command{
 	Use:  "seed database",
 	Long: "seed database strucutures. This will seed tables",
-	Run:  seed,
+	Run:  Runner.seed,
 }
 
 // seed database with fake data
-func seed(cmd *cobra.Command, args []string) {}
+func (c *command) seed(cmd *cobra.Command, args []string) {}
