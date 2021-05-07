@@ -14,11 +14,11 @@ var migrateCMD = cobra.Command{
 	Use:     "migrate",
 	Long:    "migrate database strucutures. This will migrate tables",
 	Aliases: []string{"m"},
-	Run:     migrate,
+	Run:     Runner.migrate,
 }
 
 // migrate database with fake data
-func migrate(cmd *cobra.Command, args []string) {
+func (c *command) migrate(cmd *cobra.Command, args []string) {
 	// Current working directory
 	dir, err := os.Getwd()
 	if err != nil {
