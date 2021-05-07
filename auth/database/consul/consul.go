@@ -15,12 +15,14 @@ var (
 	once    sync.Once
 )
 
-// store interface is interface for store things into mysql
+// the consul interface
 type store interface {
 	Connect(config config.GlobalConfig) error
+	GetClient() *api.Client
+	CreateSesstion(a api.SessionEntry) (string, *api.WriteMeta, error)
 }
 
-// mysql struct
+// consul struct
 type consul struct {
 	client *api.Client
 }
