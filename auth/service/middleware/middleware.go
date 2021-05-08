@@ -6,6 +6,7 @@ var (
 	M Middleware = &middle{}
 )
 
+// Middleware interface
 type Middleware interface {
 	JWT(ctx context.Context) (context.Context, error)
 }
