@@ -14,6 +14,7 @@ type Middleware interface {
 // middle struct
 type middle struct{}
 
+// JWT method
 func (m *middle) JWT(ctx context.Context) (context.Context, error) {
 	return ctx, nil
 }
