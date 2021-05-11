@@ -1,11 +1,10 @@
 package grpc
 
 import (
-	"blogfa/auth/domain/user"
-	"blogfa/auth/model"
 	"blogfa/auth/pkg/cript"
 	"blogfa/auth/pkg/jtrace"
 	pb "blogfa/auth/proto"
+	"blogfa/auth/service/grpc"
 	"context"
 	"fmt"
 	"net/http"
@@ -25,25 +24,14 @@ func (a *Auth) RegisterUser(ctx context.Context, req *pb.UserRegisterRequest) (*
 		return &pb.Response{Message: fmt.Sprintf("ERROR: %s", err.Error()), Status: &pb.Status{Code: http.StatusInternalServerError, Message: "FAILED"}}, status.Errorf(codes.Internal, "error in hash password: %s", err.Error())
 	}
 
-	// create new user requested.
-	_, err = user.Model.Register(jtrace.Tracer.ContextWithSpan(ctx, span), model.User{
-		Username:  req.GetUsername(),
-		Password:  &password,
-		Name:      req.GetName(),
-		LastName:  req.GetLastName(),
-		Phone:     req.GetPhone(),
-		Email:     req.GetEmail(),
-		BirthDate: req.GetBirthDate(),
-		Gender:    req.GetGender().String(),
-		RoleID:    1, // USER
-	})
+	response, err := grpc.Service.RegisterUser(jtrace.Tracer.ContextWithSpan(ctx, span), req, password)
 	if err != nil {
-		return &pb.Response{Message: fmt.Sprintf("ERROR: %s", err.Error()), Status: &pb.Status{Code: http.StatusInternalServerError, Message: "FAILED"}}, status.Errorf(codes.Internal, "error in store user: %s", err.Error())
+		return response, err
 	}
 
 	child := jtrace.Tracer.ChildOf(span, "register")
 	child.SetTag("register", "after register user")
 	defer child.Finish()
 
-	return &pb.Response{Message: "user created successfully", Status: &pb.Status{Code: http.StatusOK, Message: "SUCCESS"}}, nil
+	return response, nil
 }
