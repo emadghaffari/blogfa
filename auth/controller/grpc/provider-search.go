@@ -2,10 +2,9 @@ package grpc
 
 import (
 	"blogfa/auth/domain/jwt"
-	"blogfa/auth/domain/provider"
 	"blogfa/auth/pkg/jtrace"
 	pb "blogfa/auth/proto"
-	"context"
+	"blogfa/auth/service/grpc"
 	"strconv"
 
 	"google.golang.org/grpc/codes"
@@ -23,22 +22,9 @@ func (a *Auth) SearchProvider(req *pb.SearchRequest, stream pb.Auth_SearchProvid
 		return status.Errorf(codes.Internal, "provider not verified: %s", err.Error())
 	}
 
-	// convert string to int
-	from, err := strconv.Atoi(req.GetFrom())
+	providers, err := grpc.Service.SearchProvider(jtrace.Tracer.ContextWithSpan(stream.Context(), span), req)
 	if err != nil {
-		return status.Errorf(codes.Internal, "invalid from number")
-	}
-
-	// convert string to int
-	to, err := strconv.Atoi(req.GetTo())
-	if err != nil {
-		return status.Errorf(codes.Internal, "invalid to number")
-	}
-
-	// search providers
-	providers, err := provider.Model.Search(jtrace.Tracer.ContextWithSpan(context.Background(), span), from, to, req.GetSearch())
-	if err != nil {
-		return status.Errorf(codes.Internal, "internal error for search providers")
+		return err
 	}
 
 	for _, provider := range providers {
