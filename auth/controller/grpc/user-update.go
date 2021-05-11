@@ -2,10 +2,9 @@ package grpc
 
 import (
 	"blogfa/auth/domain/jwt"
-	"blogfa/auth/domain/user"
-	"blogfa/auth/model"
 	"blogfa/auth/pkg/jtrace"
 	pb "blogfa/auth/proto"
+	"blogfa/auth/service/grpc"
 	"context"
 	"fmt"
 	"net/http"
@@ -31,31 +30,10 @@ func (a *Auth) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb.R
 		}, status.Errorf(codes.Internal, "user not verified")
 	}
 
-	// update spesific user with userID
-	if err := user.Model.Update(jtrace.Tracer.ContextWithSpan(ctx, span), model.User{
-		Username:  req.GetID(),
-		Name:      req.GetName(),
-		LastName:  req.GetLastName(),
-		Phone:     req.GetPhone(),
-		Email:     req.GetEmail(),
-		BirthDate: req.GetBirthDate(),
-		Gender:    req.GetGender().String(),
-		RoleID:    req.GetRole(),
-	}); err != nil {
-		return &pb.Response{
-			Message: "user not updated successfully",
-			Status: &pb.Status{
-				Code:    http.StatusInternalServerError,
-				Message: "FAILED",
-			},
-		}, status.Errorf(codes.Internal, "user not updated successfully")
+	response, err := grpc.Service.UpdateUser(jtrace.Tracer.ContextWithSpan(context.Background(), span), req)
+	if err != nil {
+		return response, err
 	}
 
-	return &pb.Response{
-		Message: "user successfully updated",
-		Status: &pb.Status{
-			Code:    http.StatusOK,
-			Message: "SUCCESS",
-		},
-	}, nil
+	return response, nil
 }
