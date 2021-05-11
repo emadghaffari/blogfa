@@ -8,7 +8,6 @@ import (
 	"blogfa/auth/pkg/jtrace"
 	pb "blogfa/auth/proto"
 	"context"
-	"fmt"
 	"strconv"
 
 	"google.golang.org/grpc/codes"
@@ -61,7 +60,7 @@ func (a *Auth) SearchUser(req *pb.SearchRequest, stream pb.Auth_SearchUserServer
 			Providers: provider.Model.ToProto(user.Provider),
 		})
 		if err != nil {
-			return status.Errorf(codes.Internal, fmt.Sprintf("internal error for get user"))
+			return status.Errorf(codes.Internal, "internal error for get user")
 		}
 	}
 

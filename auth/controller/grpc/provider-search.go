@@ -6,7 +6,6 @@ import (
 	"blogfa/auth/pkg/jtrace"
 	pb "blogfa/auth/proto"
 	"context"
-	"fmt"
 	"strconv"
 
 	"google.golang.org/grpc/codes"
@@ -63,7 +62,7 @@ func (a *Auth) SearchProvider(req *pb.SearchRequest, stream pb.Auth_SearchProvid
 			Token: req.GetToken(),
 		})
 		if err != nil {
-			return status.Errorf(codes.Internal, fmt.Sprintf("internal error for get provider"))
+			return status.Errorf(codes.Internal, "internal error for get provider")
 		}
 	}
 
