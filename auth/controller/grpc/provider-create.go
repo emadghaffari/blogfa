@@ -2,10 +2,9 @@ package grpc
 
 import (
 	"blogfa/auth/domain/jwt"
-	"blogfa/auth/domain/provider"
-	"blogfa/auth/model"
 	"blogfa/auth/pkg/jtrace"
 	pb "blogfa/auth/proto"
+	"blogfa/auth/service/grpc"
 	"context"
 	"net/http"
 	"strconv"
@@ -31,17 +30,9 @@ func (a *Auth) CreateProvider(ctx context.Context, req *pb.CreateProviderRequest
 		return &pb.Response{Message: "invalid user id", Status: &pb.Status{Code: http.StatusInternalServerError, Message: "FAILED"}}, status.Errorf(codes.Internal, "invalid user id")
 	}
 
-	// create provider
-	if err := provider.Model.Register(jtrace.Tracer.ContextWithSpan(ctx, span), model.Provider{
-		UserID:      uint(userID),
-		FixedNumber: req.GetFixedNumber(),
-		Company:     req.GetCompany(),
-		Card:        req.GetCard(),
-		CardNumber:  req.GetCardNumber(),
-		ShebaNumber: req.GetShebaNumber(),
-		Address:     req.GetAddress(),
-	}); err != nil {
-		return &pb.Response{Message: "internal error: invalid data", Status: &pb.Status{Code: http.StatusInternalServerError, Message: "FAILED"}}, status.Errorf(codes.Internal, "error in store new provider")
+	response, err := grpc.Service.CreateProvider(jtrace.Tracer.ContextWithSpan(ctx, span), req, userID)
+	if err != nil {
+		return response, err
 	}
 
 	child := jtrace.Tracer.ChildOf(span, "register")
@@ -49,11 +40,5 @@ func (a *Auth) CreateProvider(ctx context.Context, req *pb.CreateProviderRequest
 	defer child.Finish()
 
 	// response if updated successfully
-	return &pb.Response{
-		Message: "provider successfully updated",
-		Status: &pb.Status{
-			Code:    http.StatusOK,
-			Message: "SUCCESS",
-		},
-	}, nil
+	return response, nil
 }
