@@ -77,9 +77,9 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: password
-      MYSQL_USER: root
+      # MYSQL_USER: root
       MYSQL_DATABASE: blogfa
-      MYSQL_PASSWORD: password
+      # MYSQL_PASSWORD: password
     healthcheck:
       test:
         [
@@ -153,8 +153,8 @@ services:
   nats:
     image: nats
     ports:
-      - "8222:8222"
-      - "4222:4222"
+      - "9222:8222"
+      - "5222:4222"
     networks:
       - backend
 
