@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"blogfa/auth/config"
-	"blogfa/auth/database/mysql"
+	"blogfa/auth/client/mysql"
 	"blogfa/auth/model"
 	"fmt"
 	"os"

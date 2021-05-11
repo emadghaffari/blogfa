@@ -1,7 +1,7 @@
 package grpc
 
 import (
-	"blogfa/auth/broker"
+	"blogfa/auth/client/broker"
 	"blogfa/auth/config"
 	"blogfa/auth/domain/jwt"
 	"blogfa/auth/domain/user"

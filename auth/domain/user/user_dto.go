@@ -1,7 +1,7 @@
 package user
 
 import (
-	"blogfa/auth/database/mysql"
+	"blogfa/auth/client/mysql"
 	"blogfa/auth/model"
 	"blogfa/auth/pkg/jtrace"
 	"blogfa/auth/pkg/logger"
@@ -99,7 +99,7 @@ func (u User) Update(ctx context.Context, user model.User) error {
 func (u User) Search(ctx context.Context, from, to int, search string) ([]model.User, error) {
 	span, _ := jtrace.Tracer.SpanFromContext(ctx, "search user model")
 	defer span.Finish()
-	span.SetTag("model", fmt.Sprintf("search users"))
+	span.SetTag("model", "search users")
 
 	tx := mysql.Storage.GetDatabase().Begin()
 

@@ -1,7 +1,7 @@
 package provider
 
 import (
-	"blogfa/auth/database/mysql"
+	"blogfa/auth/client/mysql"
 	"blogfa/auth/model"
 	"blogfa/auth/pkg/jtrace"
 	"blogfa/auth/pkg/logger"
@@ -99,7 +99,7 @@ func (p *Provider) Update(ctx context.Context, prov model.Provider) error {
 func (p Provider) Search(ctx context.Context, from, to int, search string) ([]model.Provider, error) {
 	span, _ := jtrace.Tracer.SpanFromContext(ctx, "search provider model")
 	defer span.Finish()
-	span.SetTag("model", fmt.Sprintf("search providers"))
+	span.SetTag("model", "search providers")
 
 	tx := mysql.Storage.GetDatabase().Begin()
 

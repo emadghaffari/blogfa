@@ -1,15 +1,15 @@
 package app
 
 import (
-	"blogfa/auth/broker"
+	"blogfa/auth/client/broker"
+	"blogfa/auth/client/consul"
+	"blogfa/auth/client/etcd"
+	"blogfa/auth/client/mysql"
+	"blogfa/auth/client/redis"
 	"blogfa/auth/config"
 	controller "blogfa/auth/controller/grpc"
 	"blogfa/auth/controller/http"
 	"blogfa/auth/controller/middleware"
-	"blogfa/auth/database/consul"
-	"blogfa/auth/database/etcd"
-	"blogfa/auth/database/mysql"
-	"blogfa/auth/database/redis"
 	"blogfa/auth/pkg/jtrace"
 	zapLogger "blogfa/auth/pkg/logger"
 	pb "blogfa/auth/proto"

@@ -1,8 +1,8 @@
 package jwt
 
 import (
+	"blogfa/auth/client/redis"
 	"blogfa/auth/config"
-	"blogfa/auth/database/redis"
 	"blogfa/auth/model"
 	zapLogger "blogfa/auth/pkg/logger"
 	"blogfa/auth/pkg/token"
