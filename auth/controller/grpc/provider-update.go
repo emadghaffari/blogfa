@@ -2,10 +2,9 @@ package grpc
 
 import (
 	"blogfa/auth/domain/jwt"
-	"blogfa/auth/domain/provider"
-	"blogfa/auth/model"
 	"blogfa/auth/pkg/jtrace"
 	pb "blogfa/auth/proto"
+	"blogfa/auth/service/grpc"
 	"context"
 	"fmt"
 	"net/http"
@@ -13,7 +12,6 @@ import (
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"gorm.io/gorm"
 )
 
 // UpdateProvider method for update provider
@@ -45,35 +43,12 @@ func (a *Auth) UpdateProvider(ctx context.Context, req *pb.UpdateProviderRequest
 		}, status.Errorf(codes.Internal, "invalid userID")
 	}
 
-	// try to update provider
-	if err := provider.Model.Update(
-		jtrace.Tracer.ContextWithSpan(ctx, span),
-		model.Provider{
-			Model:       gorm.Model{ID: uint(ID)},
-			FixedNumber: req.GetFixedNumber(),
-			Company:     req.GetCompany(),
-			CardNumber:  req.GetCardNumber(),
-			ShebaNumber: req.GetShebaNumber(),
-			Card:        req.GetCard(),
-			Address:     req.GetAddress(),
-		},
-	); err != nil {
-		return &pb.Response{
-			Message: "provider not updated successfully",
-			Status: &pb.Status{
-				Code:    http.StatusInternalServerError,
-				Message: "FAILED",
-			},
-		}, status.Errorf(codes.Internal, "provider not updated successfully")
+	response, err := grpc.Service.UpdateProvider(jtrace.Tracer.ContextWithSpan(ctx, span), req, ID)
+	if err != nil {
+		return response, err
 	}
 
 	// response if updated successfully
-	return &pb.Response{
-		Message: "provider successfully updated",
-		Status: &pb.Status{
-			Code:    http.StatusOK,
-			Message: "SUCCESS",
-		},
-	}, nil
+	return response, nil
 
 }
