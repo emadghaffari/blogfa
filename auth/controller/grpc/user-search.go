@@ -4,9 +4,9 @@ import (
 	"blogfa/auth/domain/jwt"
 	"blogfa/auth/domain/permission"
 	"blogfa/auth/domain/provider"
-	"blogfa/auth/domain/user"
 	"blogfa/auth/pkg/jtrace"
 	pb "blogfa/auth/proto"
+	"blogfa/auth/service/grpc"
 	"context"
 	"strconv"
 
@@ -37,10 +37,9 @@ func (a *Auth) SearchUser(req *pb.SearchRequest, stream pb.Auth_SearchUserServer
 		return status.Errorf(codes.Internal, "invalid to number")
 	}
 
-	// search users
-	users, err := user.Model.Search(jtrace.Tracer.ContextWithSpan(context.Background(), span), from, to, req.GetSearch())
+	users, err := grpc.Service.SearchUser(jtrace.Tracer.ContextWithSpan(context.Background(), span), from, to, req.GetSearch())
 	if err != nil {
-		return status.Errorf(codes.Internal, "internal error for search users")
+		return err
 	}
 
 	// provider list need to change
