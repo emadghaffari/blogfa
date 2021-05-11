@@ -3,6 +3,9 @@ package app
 import (
 	"blogfa/auth/broker"
 	"blogfa/auth/config"
+	controller "blogfa/auth/controller/grpc"
+	"blogfa/auth/controller/http"
+	"blogfa/auth/controller/middleware"
 	"blogfa/auth/database/consul"
 	"blogfa/auth/database/etcd"
 	"blogfa/auth/database/mysql"
@@ -10,9 +13,6 @@ import (
 	"blogfa/auth/pkg/jtrace"
 	zapLogger "blogfa/auth/pkg/logger"
 	pb "blogfa/auth/proto"
-	service "blogfa/auth/service/grpc"
-	"blogfa/auth/service/http"
-	"blogfa/auth/service/middleware"
 	"context"
 	"fmt"
 	"io"
@@ -131,7 +131,7 @@ func (a *App) initGRPCHandler(g *group.Group) {
 		// reflection for evans
 		reflection.Register(baseServer)
 
-		pb.RegisterAuthServer(baseServer, new(service.Auth))
+		pb.RegisterAuthServer(baseServer, new(controller.Auth))
 		return baseServer.Serve(lis)
 	}, func(error) {
 		lis.Close()
