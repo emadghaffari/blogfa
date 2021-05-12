@@ -7,6 +7,6 @@ import (
 )
 
 // check service health
-func Health(c *gin.Context) {
+func (a *Auth) Health(c *gin.Context) {
 	c.String(http.StatusOK, "healthy")
 }

@@ -6,6 +6,6 @@ import (
 )
 
 // get service metrics
-func Metrics(c *gin.Context) {
+func (a *Auth) Metrics(c *gin.Context) {
 	promhttp.Handler().ServeHTTP(c.Writer, c.Request)
 }
