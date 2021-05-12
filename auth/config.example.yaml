@@ -1,20 +1,40 @@
 # environment: "development"
 environment: "production"
 
+##########################################################################
+#                                                                        #
+#                          Service Identity Part                         #
+#               For Further information, please check README             #
+#                                                                        #
+##########################################################################
+
 service:
   name: "template"
+  id: "ID"
+  baseURL: "/api/v1/logger/"
   grpc:
     host: "localhost"
     port: ":8082"
-    endpoint: ":8083"
+    protocol: tcp
+    tls: false
   http:
     host: "localhost"
     port: ":8081"
-    endpoint: ":8080"
-  debug:
-    host: "localhost"
-    port: ":8084"
-    endpoint: ":8085"
+    requestTimeout: 32
+  routes:
+    - URL: "metrics/"
+      Name: "metrics"
+      Description: "check middleware"
+      Method: GET
+      MaxAllowedAnomaly: 100
+      Middleware:
+
+##########################################################################
+#                                                                        #
+#                         Server Config Part                             #
+#       Please set the server parameters based on your own settings      #
+#                                                                        #
+##########################################################################
 
 jaeger:
   hostPort: "jaeger:6831"
@@ -26,8 +46,6 @@ redis:
   db: 0
   host: "redis:6379"
   logger: ""
-  smsDuration: "500s"
-  smsCodeVerification: "100s"
   userDuration: "1000000000s"
 
 multiInstanceMode: false
@@ -59,6 +77,10 @@ Nats:
   username: ""
   password: ""
   auth: false
+  allowReconnect: true
+  maxReconnect: 50
+  reconnectWait: 5
+  timeout: 3
   endpoints:
     - "nats://nats:4222"
 
