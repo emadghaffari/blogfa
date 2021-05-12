@@ -1,6 +1,8 @@
 package app
 
 import (
+	router "blogfa/auth/app/router/http"
+	"blogfa/auth/app/router/middleware"
 	"blogfa/auth/client/broker"
 	"blogfa/auth/client/consul"
 	"blogfa/auth/client/etcd"
@@ -8,8 +10,6 @@ import (
 	"blogfa/auth/client/redis"
 	"blogfa/auth/config"
 	controller "blogfa/auth/controller/grpc"
-	"blogfa/auth/controller/http"
-	"blogfa/auth/controller/middleware"
 	"blogfa/auth/pkg/jtrace"
 	zapLogger "blogfa/auth/pkg/logger"
 	pb "blogfa/auth/proto"
@@ -22,7 +22,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/gin-gonic/gin"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_auth "github.com/grpc-ecosystem/go-grpc-middleware/auth"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
@@ -143,16 +142,8 @@ func (a *App) initGRPCHandler(g *group.Group) {
 func (a *App) initHTTPEndpoint(g *group.Group) {
 	defer fmt.Printf("metrics started port:%s \n", config.Global.Service.HTTP.Port)
 
-	router := gin.Default()
-
-	// metrics
-	router.GET("/metrics", http.Metrics)
-
-	// health check
-	router.GET("/health", http.Health)
-
 	g.Add(func() error {
-		if err := router.Run(config.Global.Service.HTTP.Port); err != nil {
+		if err := router.Router.GetRouter().Run(config.Global.Service.HTTP.Port); err != nil {
 			zapLogger.Prepare(logger).Development().Level(zap.InfoLevel).Add("msg", "transport debug/HTTP during Listen err").Commit(err.Error())
 			return err
 		}
@@ -286,13 +277,13 @@ func (a *App) defaultGRPCOptions(logger *zap.Logger, tracer opentracing.Tracer) 
 	// UnaryInterceptor and OpenTracingServerInterceptor for tracer
 	options = append(options, grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
 		otgrpc.OpenTracingServerInterceptor(tracer, otgrpc.LogPayloads()),
-		grpc_auth.UnaryServerInterceptor(middleware.Controller.JWT),
+		grpc_auth.UnaryServerInterceptor(middleware.M.JWT),
 		grpc_prometheus.UnaryServerInterceptor,
 	),
 	))
 
 	options = append(options, grpc.StreamInterceptor(
-		grpc_auth.StreamServerInterceptor(middleware.Controller.JWT),
+		grpc_auth.StreamServerInterceptor(middleware.M.JWT),
 	))
 
 	return options
