@@ -47,9 +47,5 @@ func (g *GlobalConfig) GetService() interface{} {
 }
 
 func (g *GlobalConfig) Debug() bool {
-	if g.Environment == "production" {
-		return false
-	}
-
-	return true
+	return g.Environment != "production"
 }

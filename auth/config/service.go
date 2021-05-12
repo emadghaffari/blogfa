@@ -2,20 +2,27 @@ package config
 
 // Service details
 type service struct {
-	Name string `yaml:"service.name"`
-	GRPC struct {
+	Name    string `yaml:"service.name"`
+	ID      string `yaml:"service.id"`
+	BaseURL string `yaml:"service.baseURL"`
+	GRPC    struct {
 		Host     string `yaml:"grpc.host"`
 		Port     string `yaml:"grpc.port"`
-		Endpoint string `yaml:"grpc.endpoint"`
+		TLS      bool   `yaml:"grpc.tls"`
+		Protocol string `yaml:"protocol"`
 	}
 	HTTP struct {
-		Host     string `yaml:"http.host"`
-		Port     string `yaml:"http.port"`
-		Endpoint string `yaml:"http.endpoint"`
+		Host           string `yaml:"http.host"`
+		Port           string `yaml:"http.port"`
+		RequestTimeout string `yaml:"http.requestTimeout"`
 	}
-	DEBUG struct {
-		Host     string `yaml:"debug.host"`
-		Port     string `yaml:"debug.port"`
-		Endpoint string `yaml:"debug.endpoint"`
-	}
+	Router []router `yaml:"service.router"`
+}
+
+type router struct {
+	Name              string   `yaml:"Name"`
+	Method            string   `yaml:"Method"`
+	URL               string   `yaml:"URL"`
+	MaxAllowedAnomaly float32  `yaml:"MaxAllowedAnomaly"`
+	Middlewares       []string `yaml:"Middleware"`
 }
