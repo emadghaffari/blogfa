@@ -3,7 +3,7 @@ package middleware
 import "context"
 
 var (
-	M Middleware = &middle{}
+	Controller Middleware = &middle{}
 )
 
 // Middleware interface

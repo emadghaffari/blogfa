@@ -286,13 +286,13 @@ func (a *App) defaultGRPCOptions(logger *zap.Logger, tracer opentracing.Tracer) 
 	// UnaryInterceptor and OpenTracingServerInterceptor for tracer
 	options = append(options, grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(
 		otgrpc.OpenTracingServerInterceptor(tracer, otgrpc.LogPayloads()),
-		grpc_auth.UnaryServerInterceptor(middleware.M.JWT),
+		grpc_auth.UnaryServerInterceptor(middleware.Controller.JWT),
 		grpc_prometheus.UnaryServerInterceptor,
 	),
 	))
 
 	options = append(options, grpc.StreamInterceptor(
-		grpc_auth.StreamServerInterceptor(middleware.M.JWT),
+		grpc_auth.StreamServerInterceptor(middleware.Controller.JWT),
 	))
 
 	return options
