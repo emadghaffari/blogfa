@@ -6,6 +6,7 @@ import (
 	"context"
 )
 
+// Service var
 var (
 	Service auth = &Auth{}
 )
