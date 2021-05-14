@@ -14,6 +14,7 @@ var (
 // Auth service
 type Auth struct{}
 
+// auth interface
 type auth interface {
 	PLogin(ctx context.Context, req *pb.PLoginRequest) (*pb.PLoginResponse, error)
 	CreateProvider(ctx context.Context, req *pb.CreateProviderRequest, userID int) (*pb.Response, error)
